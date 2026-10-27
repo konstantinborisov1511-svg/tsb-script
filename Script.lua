@@ -91,12 +91,29 @@ BindInfo.TextColor3 = Color3.fromRGB(130, 130, 150)
 BindInfo.TextSize = 12
 BindInfo.TextXAlignment = Enum.TextXAlignment.Right
 
-local dragging, dragInput, dragStart, startPos
+   local dragging, dragInput, dragStart, startPos
 MainFrame.InputBegan:Connect(function(input)
     if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
         dragging = true
         dragStart = input.Position
         startPos = MainFrame.Position
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then dragging = false end
+        end)
+    end
+end)
+MainFrame.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+        dragInput = input
+    end
+end)
+UIS.InputChanged:Connect(function(input)
+    if input == dragInput and dragging then
+        local delta = input.Position - dragStart
+        MainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+    end
+end)
+
 local function ToggleGui()
     guiExpanded = not guiExpanded
     if guiExpanded then
@@ -111,8 +128,9 @@ local function ToggleGui()
             if not guiExpanded then MainFrame.Visible = false end
         end)
     end
-            end
-            
+end
+
+
 
 UIS.InputBegan:Connect(function(input, gpe)
     if gpe then return end
