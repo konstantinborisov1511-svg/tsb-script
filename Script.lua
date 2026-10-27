@@ -97,22 +97,22 @@ MainFrame.InputBegan:Connect(function(input)
         dragging = true
         dragStart = input.Position
         startPos = MainFrame.Position
-        input.Changed:Connect(function()
-            if input.UserInputState == Enum.UserInputState.End then dragging = false end
+        local function ToggleGui()
+    guiExpanded = not guiExpanded
+    if guiExpanded then
+        MainFrame.Visible = true
+    end
+    local targetSize = guiExpanded and UDim2.new(0, 630, 0, 420) or UDim2.new(0, 630, 0, 0)
+    local tween = TS:Create(MainFrame, TweenInfo.new(0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = targetSize})
+    tween:Play()
+
+    if not guiExpanded then
+        tween.Completed:Connect(function()
+            if not guiExpanded then MainFrame.Visible = false end
         end)
     end
-end)
-MainFrame.InputChanged:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
-        dragInput = input
-    end
-end)
-UIS.InputChanged:Connect(function(input)
-    if input == dragInput and dragging then
-        local delta = input.Position - dragStart
-        MainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
-    end
-end)
+            end
+            
 
 local function ToggleGui()
     guiExpanded = not guiExpanded
