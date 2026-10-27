@@ -28,6 +28,7 @@ MainFrame.Position = UDim2.new(0.05, 0, 0.25, 0)
 MainFrame.Size = UDim2.new(0, 630, 0, 260)
 MainFrame.Active = true
 MainFrame.ClipsDescendants = true
+MainFrame.Visible = false -- Скрываем главное меню на время приветствия
 
 local function round(obj, r)
     local c = Instance.new("UICorner")
@@ -36,10 +37,55 @@ local function round(obj, r)
 end
 round(MainFrame, 10)
 
+-- === ОКНО ПРИВЕТСТВИЯ (SPLASH SCREEN) ===
+local WelcomeFrame = Instance.new("Frame")
+WelcomeFrame.Name = "WelcomeFrame"
+WelcomeFrame.Parent = ScreenGui
+WelcomeFrame.BackgroundColor3 = Color3.fromRGB(12, 12, 14)
+WelcomeFrame.Position = UDim2.new(0.5, -175, 0.5, -50) -- Ровно по центру экрана
+WelcomeFrame.Size = UDim2.new(0, 350, 0, 100)
+round(WelcomeFrame, 10)
+
+local welcomeStroke = Instance.new("UIStroke")
+welcomeStroke.Thickness = 1.5
+welcomeStroke.Color = Color3.fromRGB(150, 0, 255)
+welcomeStroke.Parent = WelcomeFrame
+
+local WelcomeText = Instance.new("TextLabel")
+WelcomeText.Parent = WelcomeFrame
+WelcomeText.BackgroundTransparency = 1
+WelcomeText.Position = UDim2.new(0, 0, 0, 0)
+WelcomeText.Size = UDim2.new(1, 0, 1, 0)
+WelcomeText.Font = Enum.Font.SourceSansBold
+WelcomeText.Text = "Приветствуем вас в ameba optimizer"
+WelcomeText.TextColor3 = Color3.fromRGB(180, 100, 255)
+WelcomeText.TextSize = 18
+WelcomeText.TextWrapped = true
+
+task.spawn(function()
+    task.wait(3) -- Отображаем текст 3 секунды
+    
+    -- Анимация плавного исчезновения
+    local tweenHide = TS:Create(WelcomeFrame, TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {BackgroundTransparency = 1})
+    local textHide = TS:Create(WelcomeText, TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextTransparency = 1})
+    local strokeHide = TS:Create(welcomeStroke, TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Transparency = 1})
+    
+    tweenHide:Play()
+    textHide:Play()
+    strokeHide:Play()
+    
+    task.wait(0.5)
+    WelcomeFrame:Destroy() -- Удаляем окно приветствия
+    
+    MainFrame.Visible = true -- Показываем основное меню чита
+end)
+-- =======================================
+
 local mainStroke = Instance.new("UIStroke")
 mainStroke.Thickness = 1.5
 mainStroke.Color = Color3.fromRGB(150, 0, 255)
 mainStroke.Parent = MainFrame
+
 
 local BindInfo = Instance.new("TextLabel")
 BindInfo.Parent = MainFrame
