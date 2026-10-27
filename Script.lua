@@ -372,3 +372,35 @@ ClearBtn.MouseButton1Click:Connect(function()
         ClearBtn.Text = "Очистить карту от Хлама"
     end)
 end)
+-- === КНОПКА СВЕРНУТЬ/РАЗВЕРНУТЬ ДЛЯ ТЕЛЕФОНОВ ===
+local MobileToggleButton = Instance.new("TextButton")
+MobileToggleButton.Name = "MobileToggle"
+MobileToggleButton.Parent = ScreenGui
+-- Размещаем в левом верхнем углу, чтобы не мешала кнопкам управления Roblox
+MobileToggleButton.Position = UDim2.new(0.02, 0, 0.15, 0) 
+MobileToggleButton.Size = UDim2.new(0, 45, 0, 45)
+MobileToggleButton.BackgroundColor3 = Color3.fromRGB(12, 12, 14)
+MobileToggleButton.Text = "⚙️"
+MobileToggleButton.TextSize = 20
+MobileToggleButton.TextColor3 = Color3.fromRGB(180, 100, 255)
+round(MobileToggleButton, 22) -- Делаем кнопку круглой
+
+local mobileStroke = Instance.new("UIStroke")
+mobileStroke.Thickness = 1.5
+mobileStroke.Color = Color3.fromRGB(138, 43, 226)
+mobileStroke.Parent = MobileToggleButton
+
+-- Логика скрытия/открытия по нажатию на кнопку
+MobileToggleButton.MouseButton1Click:Connect(function()
+    guiVisible = not guiVisible
+    MainFrame.Visible = guiVisible
+    
+    -- Анимация изменения прозрачности кнопки при клике
+    if guiVisible then
+        MobileToggleButton.BackgroundColor3 = Color3.fromRGB(12, 12, 14)
+        mobileStroke.Color = Color3.fromRGB(138, 43, 226)
+    else
+        MobileToggleButton.BackgroundColor3 = Color3.fromRGB(20, 20, 25)
+        mobileStroke.Color = Color3.fromRGB(80, 40, 120) -- Слегка тускнеет, когда меню закрыто
+    end
+end)
