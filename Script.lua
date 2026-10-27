@@ -11,7 +11,7 @@ local Toggles = {
     Oreo = false, King = false, Supa = false
 }
 local GuiVisible = true
-
+local guiExpanded = true
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "TSB_Advanced_Booster"
 ScreenGui.ResetOnSpawn = false
@@ -25,10 +25,10 @@ MainFrame.BackgroundColor3 = Color3.fromRGB(12, 12, 14)
 MainFrame.BorderColor3 = Color3.fromRGB(138, 43, 226)
 MainFrame.BorderSizePixel = 1
 MainFrame.Position = UDim2.new(0.05, 0, 0.25, 0)
-MainFrame.Size = UDim2.new(0, 630, 0, 260)
+MainFrame.Size = UDim2.new(0, 630, 0, 420)
 MainFrame.Active = true
 MainFrame.ClipsDescendants = true
-MainFrame.Visible = false -- Скрываем главное меню на время приветствия
+MainFrame.Visible = false 
 
 local function round(obj, r)
     local c = Instance.new("UICorner")
@@ -37,12 +37,11 @@ local function round(obj, r)
 end
 round(MainFrame, 10)
 
--- === ОКНО ПРИВЕТСТВИЯ (SPLASH SCREEN) ===
 local WelcomeFrame = Instance.new("Frame")
 WelcomeFrame.Name = "WelcomeFrame"
 WelcomeFrame.Parent = ScreenGui
 WelcomeFrame.BackgroundColor3 = Color3.fromRGB(12, 12, 14)
-WelcomeFrame.Position = UDim2.new(0.5, -175, 0.5, -50) -- Ровно по центру экрана
+WelcomeFrame.Position = UDim2.new(0.5, -175, 0.5, -50)
 WelcomeFrame.Size = UDim2.new(0, 350, 0, 100)
 round(WelcomeFrame, 10)
 
@@ -63,9 +62,7 @@ WelcomeText.TextSize = 18
 WelcomeText.TextWrapped = true
 
 task.spawn(function()
-    task.wait(3) -- Отображаем текст 3 секунды
-    
-    -- Анимация плавного исчезновения
+    task.wait(3)
     local tweenHide = TS:Create(WelcomeFrame, TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {BackgroundTransparency = 1})
     local textHide = TS:Create(WelcomeText, TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextTransparency = 1})
     local strokeHide = TS:Create(welcomeStroke, TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Transparency = 1})
@@ -75,22 +72,18 @@ task.spawn(function()
     strokeHide:Play()
     
     task.wait(0.5)
-    WelcomeFrame:Destroy() -- Удаляем окно приветствия
-    
-    MainFrame.Visible = true -- Показываем основное меню чита
+    WelcomeFrame:Destroy()
+    MainFrame.Visible = true
 end)
--- =======================================
 
 local mainStroke = Instance.new("UIStroke")
 mainStroke.Thickness = 1.5
 mainStroke.Color = Color3.fromRGB(150, 0, 255)
 mainStroke.Parent = MainFrame
-
-
 local BindInfo = Instance.new("TextLabel")
 BindInfo.Parent = MainFrame
 BindInfo.BackgroundTransparency = 1
-BindInfo.Position = UDim2.new(0, 450, 0, 235)
+BindInfo.Position = UDim2.new(0, 450, 0, 395)
 BindInfo.Size = UDim2.new(0, 170, 0, 20)
 BindInfo.Font = Enum.Font.SourceSansItalic
 BindInfo.Text = "[ Нажмите K для скрытия ]"
@@ -122,8 +115,8 @@ UIS.InputChanged:Connect(function(input)
 end)
 
 local function ToggleGui()
-    GuiVisible = not GuiVisible
-    local targetSize = GuiVisible and UDim2.new(0, 630, 0, 260) or UDim2.new(0, 630, 0, 0)
+    guiExpanded = not guiExpanded
+    local targetSize = guiExpanded and UDim2.new(0, 630, 0, 420) or UDim2.new(0, 630, 0, 0)
     TS:Create(MainFrame, TweenInfo.new(0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = targetSize}):Play()
 end
 UIS.InputBegan:Connect(function(input, gpe)
@@ -173,6 +166,38 @@ ClearBtn.TextColor3 = Color3.fromRGB(230, 220, 255)
 ClearBtn.TextSize = 13
 round(ClearBtn, 6)
 
+local FogBtn = Instance.new("TextButton")
+FogBtn.Parent = MainFrame
+FogBtn.BackgroundColor3 = Color3.fromRGB(22, 18, 30)
+FogBtn.Position = UDim2.new(0, 10, 0, 210)
+FogBtn.Size = UDim2.new(0, 190, 0, 45)
+FogBtn.Font = Enum.Font.SourceSansBold
+FogBtn.Text = "🔮 Фиолетовый Туман"
+FogBtn.TextColor3 = Color3.fromRGB(230, 220, 255)
+FogBtn.TextSize = 13
+round(FogBtn, 6)
+
+local TrailsBtn = Instance.new("TextButton")
+TrailsBtn.Parent = MainFrame
+TrailsBtn.BackgroundColor3 = Color3.fromRGB(22, 18, 30)
+TrailsBtn.Position = UDim2.new(0, 10, 0, 265)
+TrailsBtn.Size = UDim2.new(0, 190, 0, 45)
+TrailsBtn.Font = Enum.Font.SourceSansBold
+TrailsBtn.Text = "✨ Вырезать Шлейфы"
+TrailsBtn.TextColor3 = Color3.fromRGB(230, 220, 255)
+TrailsBtn.TextSize = 13
+round(TrailsBtn, 6)
+
+local QualityBtn = Instance.new("TextButton")
+QualityBtn.Parent = MainFrame
+QualityBtn.BackgroundColor3 = Color3.fromRGB(22, 18, 30)
+QualityBtn.Position = UDim2.new(0, 10, 0, 320)
+QualityBtn.Size = UDim2.new(0, 190, 0, 45)
+QualityBtn.Font = Enum.Font.SourceSansBold
+QualityBtn.Text = "⚙️ Движок на Минимум"
+QualityBtn.TextColor3 = Color3.fromRGB(230, 220, 255)
+QualityBtn.TextSize = 13
+round(QualityBtn, 6)
 local MacroTitle = Instance.new("TextLabel")
 MacroTitle.Parent = MainFrame
 MacroTitle.BackgroundTransparency = 1
@@ -259,7 +284,7 @@ SupaBtn.TextColor3 = Color3.fromRGB(230, 220, 255)
 SupaBtn.TextSize = 13
 round(SupaBtn, 6)
 
-for _, b in pairs({GroundBtn, EffectsBtn, ClearBtn, SideDashBtn, DownSlamBtn, RagdollBtn, OreoBtn, KingBtn, SupaBtn}) do
+for _, b in pairs({GroundBtn, EffectsBtn, ClearBtn, FogBtn, TrailsBtn, QualityBtn, SideDashBtn, DownSlamBtn, RagdollBtn, OreoBtn, KingBtn, SupaBtn}) do
     local s = Instance.new("UIStroke")
     s.Thickness = 1
     s.Color = Color3.fromRGB(80, 40, 120)
@@ -267,7 +292,7 @@ for _, b in pairs({GroundBtn, EffectsBtn, ClearBtn, SideDashBtn, DownSlamBtn, Ra
 end
 
 local function updateButtonState(btn, state, activeText, inactiveText)
-    local targetColor = state and Color3.fromRGB(90, 30, 160) or Color3.fromRGB(22, 18, 30)
+    local targetColor = state and Color3.fromRGB(100, 30, 180) or Color3.fromRGB(22, 18, 30)
     TS:Create(btn, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {BackgroundColor3 = targetColor}):Play()
     btn.Text = state and activeText or inactiveText
 end
@@ -372,35 +397,74 @@ ClearBtn.MouseButton1Click:Connect(function()
         ClearBtn.Text = "Очистить карту от Хлама"
     end)
 end)
--- === КНОПКА СВЕРНУТЬ/РАЗВЕРНУТЬ ДЛЯ ТЕЛЕФОНОВ ===
+
+local fogActive = false
+FogBtn.MouseButton1Click:Connect(function()
+    fogActive = not fogActive
+    if fogActive then
+        FogBtn.BackgroundColor3 = Color3.fromRGB(100, 30, 180)
+        FogBtn.Text = "🔮 Туман: ON ✔"
+        game:GetService("Lighting").FogStart = 30
+        game:GetService("Lighting").FogEnd = 120
+        game:GetService("Lighting").FogColor = Color3.fromRGB(12, 12, 14)
+    else
+        FogBtn.BackgroundColor3 = Color3.fromRGB(22, 18, 30)
+        FogBtn.Text = "🔮 Фиолетовый Туман"
+        game:GetService("Lighting").FogStart = 0
+        game:GetService("Lighting").FogEnd = 999999
+    end
+end)
+
+local trailsActive = false
+local hiddenTrails = {}
+TrailsBtn.MouseButton1Click:Connect(function()
+    trailsActive = not trailsActive
+    if trailsActive then
+        TrailsBtn.BackgroundColor3 = Color3.fromRGB(100, 30, 180)
+        TrailsBtn.Text = "✨ Шлейфы: ВЫРЕЗАНЫ ✔"
+        for _, v in pairs(workspace:GetDescendants()) do
+            if v:IsA("Beam") or v:IsA("Trail") then
+                if v.Enabled then table.insert(hiddenTrails, v) v.Enabled = false end
+            end
+        end
+    else
+        TrailsBtn.BackgroundColor3 = Color3.fromRGB(22, 18, 30)
+        TrailsBtn.Text = "✨ Вырезать Шлейфы"
+        for _, v in pairs(hiddenTrails) do if v and v.Parent then v.Enabled = true end end
+        table.clear(hiddenTrails)
+    end
+end)
+
+local qualityActive = false
+QualityBtn.MouseButton1Click:Connect(function()
+    qualityActive = not qualityActive
+    if qualityActive then
+        QualityBtn.BackgroundColor3 = Color3.fromRGB(100, 30, 180)
+        QualityBtn.Text = "⚙️ Лоу-Режим: АКТИВЕН ✔"
+        settings().Rendering.QualityLevel = Enum.QualityLevel.Level01
+    else
+        QualityBtn.BackgroundColor3 = Color3.fromRGB(22, 18, 30)
+        QualityBtn.Text = "⚙️ Движок на Минимум"
+        settings().Rendering.QualityLevel = Enum.QualityLevel.Automatic
+    end
+end)
+
 local MobileToggleButton = Instance.new("TextButton")
 MobileToggleButton.Name = "MobileToggle"
 MobileToggleButton.Parent = ScreenGui
--- Размещаем в левом верхнем углу, чтобы не мешала кнопкам управления Roblox
 MobileToggleButton.Position = UDim2.new(0.02, 0, 0.15, 0) 
 MobileToggleButton.Size = UDim2.new(0, 45, 0, 45)
 MobileToggleButton.BackgroundColor3 = Color3.fromRGB(12, 12, 14)
 MobileToggleButton.Text = "⚙️"
 MobileToggleButton.TextSize = 20
 MobileToggleButton.TextColor3 = Color3.fromRGB(180, 100, 255)
-round(MobileToggleButton, 22) -- Делаем кнопку круглой
+round(MobileToggleButton, 22)
 
 local mobileStroke = Instance.new("UIStroke")
 mobileStroke.Thickness = 1.5
 mobileStroke.Color = Color3.fromRGB(138, 43, 226)
 mobileStroke.Parent = MobileToggleButton
 
--- Логика скрытия/открытия по нажатию на кнопку
 MobileToggleButton.MouseButton1Click:Connect(function()
-    guiVisible = not guiVisible
-    MainFrame.Visible = guiVisible
-    
-    -- Анимация изменения прозрачности кнопки при клике
-    if guiVisible then
-        MobileToggleButton.BackgroundColor3 = Color3.fromRGB(12, 12, 14)
-        mobileStroke.Color = Color3.fromRGB(138, 43, 226)
-    else
-        MobileToggleButton.BackgroundColor3 = Color3.fromRGB(20, 20, 25)
-        mobileStroke.Color = Color3.fromRGB(80, 40, 120) -- Слегка тускнеет, когда меню закрыто
-    end
+    ToggleGui()
 end)
