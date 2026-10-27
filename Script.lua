@@ -97,7 +97,7 @@ MainFrame.InputBegan:Connect(function(input)
         dragging = true
         dragStart = input.Position
         startPos = MainFrame.Position
-        local function ToggleGui()
+local function ToggleGui()
     guiExpanded = not guiExpanded
     if guiExpanded then
         MainFrame.Visible = true
@@ -113,22 +113,6 @@ MainFrame.InputBegan:Connect(function(input)
     end
             end
             
-
-local function ToggleGui()
-    guiExpanded = not guiExpanded
-    if guiExpanded then
-        MainFrame.Visible = true
-    end
-    local targetSize = guiExpanded and UDim2.new(0, 630, 0, 420) or UDim2.new(0, 630, 0, 0)
-    local tween = TS:Create(MainFrame, TweenInfo.new(0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = targetSize})
-    tween:Play()
-
-    if not guiExpanded then
-        tween.Completed:Connect(function()
-            if not guiExpanded then MainFrame.Visible = false end
-        
-    end
-end
 
 UIS.InputBegan:Connect(function(input, gpe)
     if gpe then return end
