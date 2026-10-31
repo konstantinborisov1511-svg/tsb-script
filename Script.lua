@@ -11,7 +11,8 @@ local Toggles = {
     SideDash = false, DownSlam = false, Ragdoll = false,
     Oreo = false, King = false, Supa = false,
     AutoClear = false, AutoTrails = false, LowRender = false, CustomFog = false,
-    CamLock = false, MobileShift = false, EspToggle = false, Disable3D = false
+    CamLock = false, MobileShift = false, EspToggle = false, Disable3D = false,
+    ExtremeFPS = false
 }
 
 local guiExpanded = true
@@ -68,7 +69,7 @@ MainTitle.BackgroundTransparency = 1
 MainTitle.Position = UDim2.new(0, 15, 0, 5)
 MainTitle.Size = UDim2.new(0, 350, 0, 30)
 MainTitle.Font = Enum.Font.SourceSansBold
-MainTitle.Text = "⚡ ameba optimizer v6.0 (PC Graphics Update)"
+MainTitle.Text = "⚡ ameba optimizer v7.0 (X3 HARD FPS BOOST)"
 MainTitle.TextColor3 = Color3.fromRGB(180, 100, 255)
 MainTitle.TextSize = 16
 MainTitle.TextXAlignment = Enum.TextXAlignment.Left
@@ -100,7 +101,7 @@ WelcomeText.Parent = WelcomeFrame
 WelcomeText.BackgroundTransparency = 1
 WelcomeText.Size = UDim2.new(1, 0, 1, 0)
 WelcomeText.Font = Enum.Font.SourceSansBold
-WelcomeText.Text = "Приветствуем вас в ameba optimizer PRO"
+WelcomeText.Text = "ameba optimizer HARDCORE X3 ACTIVE"
 WelcomeText.TextColor3 = Color3.fromRGB(180, 100, 255)
 WelcomeText.TextSize = 16
 
@@ -224,7 +225,7 @@ local function clickMouse()
         VIM:SendMouseButtonEvent(0, 0, 0, false, game, 0)
     end)
 end
-local Col1 = CreateTab("1. Ультра Оптимизация", "col1")
+local Col1 = CreateTab("1. ХАРДКОР ОПТИМИЗАЦИЯ", "col1")
 local Col2 = CreateTab("2. Ультра Графика", "col2")
 local Col3 = CreateTab("3. Очистка Мусора", "col3")
 local Col4 = CreateTab("4. Атмосфера", "col4")
@@ -235,29 +236,38 @@ local Col8 = CreateTab("8. Удары и ESP", "col8")
 local Col9 = CreateTab("9. Продвинутые Авто", "col9")
 local Col10 = CreateTab("10. Камера и Бой", "col10")
 
-CreateButton(Col1, "Сжать Землю и Текстуры", UDim2.new(0, 0, 0, 45), function(btn)
-    btn.Text = "Сжатие (85% Soft)... ⏳"
+CreateButton(Col1, "🔥 Экстремальный Буст FPS x3", UDim2.new(0, 0, 0, 45), function(btn)
+    Toggles.ExtremeFPS = not Toggles.ExtremeFPS
+    updateBtnVisual(btn, Toggles.ExtremeFPS, "🔥 Буст x3: АКТИВИРОВАН ✔", "🔥 Экстремальный Буст FPS x3")
+    
     task.spawn(function()
-        for _, v in ipairs(workspace:GetDescendants()) do
+        while Toggles.ExtremeFPS do
             pcall(function()
-                if v:IsA("BasePart") then v.Material = Enum.Material.SmoothPlastic v.Reflectance = 0 v.CastShadow = false
-                elseif v:IsA("Texture") or v:IsA("Decal") then v:Destroy()
-                elseif v:IsA("MeshPart") then v.RenderFidelity = Enum.RenderFidelity.Performance v.CollisionFidelity = Enum.CollisionFidelity.Box v.Material = Enum.Material.SmoothPlastic end
+                gcinfo() -- Очистка Lua-мусора из оперативной памяти
+                settings().Rendering.QualityLevel = Enum.QualityLevel.Level01
             end)
+            task.wait(1)
         end
-        local t = workspace:FindFirstChildOfClass("Terrain")
-        if t then t.WaterWaveSize = 0 t.WaterWaveSpeed = 0 t.Decoration = false end
-        btn.BackgroundColor3 = Color3.fromRGB(100, 30, 180) btn.Text = "Текстуры Сжаты! ✔"
     end)
 end)
 
-CreateButton(Col1, "🚫 Отключить 3D Рендер (AFK)", UDim2.new(0, 0, 0, 100), function(btn)
+CreateButton(Col1, "💀 Вырезать Освещение и Небо", UDim2.new(0, 0, 0, 100), function(btn)
+    pcall(function()
+        game:GetService("Lighting").GlobalShadows = false
+        game:GetService("Lighting").EnvironmentSpecularScale = 0
+        game:GetService("Lighting").EnvironmentDiffuseScale = 0
+        local sky = game:GetService("Lighting"):FindFirstChildOfClass("Sky")
+        if sky then sky:Destroy() end
+        btn.BackgroundColor3 = Color3.fromRGB(100, 30, 180) btn.Text = "Небо и Свет Удалены! ✔"
+    end)
+end)
+
+CreateButton(Col1, "🚫 Отключить 3D Рендер (AFK)", UDim2.new(0, 0, 0, 155), function(btn)
     Toggles.Disable3D = not Toggles.Disable3D
     updateBtnVisual(btn, Toggles.Disable3D, "🚫 3D Рендер: ВЫКЛЮЧЕН ✔", "🚫 Отключить 3D Рендер (AFK)")
     game:GetService("RunService"):Set3DRenderingEnabled(not Toggles.Disable3D)
 end)
 
--- ЛОГИКА ВКЛАДКИ 2: МОЩНАЯ ГРАФИКА ДЛЯ ПК
 CreateButton(Col2, "👑 Максимальная Графика RT", UDim2.new(0, 0, 0, 45), function(btn)
     task.spawn(function()
         settings().Rendering.QualityLevel = Enum.QualityLevel.Level21
@@ -392,7 +402,7 @@ UIS.InputBegan:Connect(function(input, gpe)
     elseif input.KeyCode == Enum.KeyCode.V and Toggles.Ragdoll then
         local hum = LP.Character and LP.Character:FindFirstChild("Humanoid")
         if hum then for i=1,4 do hum:ChangeState(Enum.HumanoidStateType.Jumping) runDash() task.wait(0.02) end end
-    elseif input.KeyCode == Enum.KeyCode.Z and Toggles.Oreo then clickMouse() task.wait(0.22) runDash() task.wait(0.04) useSkill(1)
+        elseif input.KeyCode == Enum.KeyCode.Z and Toggles.Oreo then clickMouse() task.wait(0.22) runDash() task.wait(0.04) useSkill(1)
 elseif input.KeyCode == Enum.KeyCode.X and Toggles.King then clickMouse() task.wait(0.1) useSkill(2)
 elseif input.KeyCode == Enum.KeyCode.C and Toggles.Supa then clickMouse() task.wait(0.1) runDash() task.wait(0.02) useSkill(3)
 end
@@ -411,4 +421,4 @@ end)
 local MobileToggleButton = Instance.new("TextButton")
 MobileToggleButton.Name = "MobileToggle" local uiS = Instance.new("UIStroke", MobileToggleButton) uiS.Thickness = 1.5 uiS.Color = Color3.fromRGB(138, 43, 226)
 MobileToggleButton.Parent = ScreenGui MobileToggleButton.Position = UDim2.new(0.02, 0, 0.15, 0) MobileToggleButton.Size = UDim2.new(0, 45, 0, 45) MobileToggleButton.BackgroundColor3 = Color3.fromRGB(12, 12, 14) MobileToggleButton.Text = "⚙️" MobileToggleButton.TextSize = 20 MobileToggleButton.TextColor3 = Color3.fromRGB(180, 100, 255) round(MobileToggleButton, 22) MobileToggleButton.MouseButton1Click:Connect(ToggleGui)
-tabs["col1"].Btn.BackgroundColor3 = Color3.fromRGB(100, 30, 180) tabs["col1"].Btn.TextColor3 = Color3.fromRGB(255, 255, 255) tabs["col1"].Page.Visible = true       
+tabs["col1"].Btn.BackgroundColor3 = Color3.fromRGB(100, 30, 180) tabs["col1"].Btn.TextColor3 = Color3.fromRGB(255, 255, 255) tabs["col1"].Page.Visible = true
