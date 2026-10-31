@@ -11,7 +11,7 @@ local Toggles = {
     SideDash = false, DownSlam = false, Ragdoll = false,
     Oreo = false, King = false, Supa = false,
     AutoClear = false, AutoTrails = false, LowRender = false, CustomFog = false,
-    CamLock = false, MobileShift = false, EspToggle = false, SafeMode = false
+    CamLock = false, MobileShift = false, EspToggle = false, Disable3D = false
 }
 
 local guiExpanded = true
@@ -68,7 +68,7 @@ MainTitle.BackgroundTransparency = 1
 MainTitle.Position = UDim2.new(0, 15, 0, 5)
 MainTitle.Size = UDim2.new(0, 350, 0, 30)
 MainTitle.Font = Enum.Font.SourceSansBold
-MainTitle.Text = "⚡ ameba optimizer v4.0 (5-Part Safe Split)"
+MainTitle.Text = "⚡ ameba optimizer v6.0 (PC Graphics Update)"
 MainTitle.TextColor3 = Color3.fromRGB(180, 100, 255)
 MainTitle.TextSize = 16
 MainTitle.TextXAlignment = Enum.TextXAlignment.Left
@@ -100,16 +100,16 @@ WelcomeText.Parent = WelcomeFrame
 WelcomeText.BackgroundTransparency = 1
 WelcomeText.Size = UDim2.new(1, 0, 1, 0)
 WelcomeText.Font = Enum.Font.SourceSansBold
-WelcomeText.Text = "Приветствуем вас в ameba optimizer"
+WelcomeText.Text = "Приветствуем вас в ameba optimizer PRO"
 WelcomeText.TextColor3 = Color3.fromRGB(180, 100, 255)
-WelcomeText.TextSize = 18
+WelcomeText.TextSize = 16
 
 task.spawn(function()
-    task.wait(1.5)
-    TS:Create(WelcomeFrame, TweenInfo.new(0.5), {BackgroundTransparency = 1}):Play()
-    TS:Create(WelcomeText, TweenInfo.new(0.5), {TextTransparency = 1}):Play()
-    TS:Create(welcomeStroke, TweenInfo.new(0.5), {Transparency = 1}):Play()
-    task.wait(0.5)
+    task.wait(1.2)
+    TS:Create(WelcomeFrame, TweenInfo.new(0.4), {BackgroundTransparency = 1}):Play()
+    TS:Create(WelcomeText, TweenInfo.new(0.4), {TextTransparency = 1}):Play()
+    TS:Create(welcomeStroke, TweenInfo.new(0.4), {Transparency = 1}):Play()
+    task.wait(0.4)
     WelcomeFrame:Destroy()
     MainFrame.Visible = true
 end)
@@ -224,8 +224,8 @@ local function clickMouse()
         VIM:SendMouseButtonEvent(0, 0, 0, false, game, 0)
     end)
 end
-local Col1 = CreateTab("1. Текстуры", "col1")
-local Col2 = CreateTab("2. Пост-Эффекты", "col2")
+local Col1 = CreateTab("1. Ультра Оптимизация", "col1")
+local Col2 = CreateTab("2. Ультра Графика", "col2")
 local Col3 = CreateTab("3. Очистка Мусора", "col3")
 local Col4 = CreateTab("4. Атмосфера", "col4")
 local Col5 = CreateTab("5. Шлейфы", "col5")
@@ -251,12 +251,29 @@ CreateButton(Col1, "Сжать Землю и Текстуры", UDim2.new(0, 0, 
     end)
 end)
 
-CreateButton(Col2, "Вырубить Эффекты", UDim2.new(0, 0, 0, 45), function(btn)
-    for _, e in pairs(game:GetService("Lighting"):GetChildren()) do
-        if e:IsA("PostEffect") or e:IsA("BloomEffect") or e:IsA("BlurEffect") or e:IsA("SunRaysEffect") then e.Enabled = false end
-    end
-    game:GetService("Lighting").GlobalShadows = false
-    btn.BackgroundColor3 = Color3.fromRGB(100, 30, 180) btn.Text = "Эффекты Выключены! ✔"
+CreateButton(Col1, "🚫 Отключить 3D Рендер (AFK)", UDim2.new(0, 0, 0, 100), function(btn)
+    Toggles.Disable3D = not Toggles.Disable3D
+    updateBtnVisual(btn, Toggles.Disable3D, "🚫 3D Рендер: ВЫКЛЮЧЕН ✔", "🚫 Отключить 3D Рендер (AFK)")
+    game:GetService("RunService"):Set3DRenderingEnabled(not Toggles.Disable3D)
+end)
+
+-- ЛОГИКА ВКЛАДКИ 2: МОЩНАЯ ГРАФИКА ДЛЯ ПК
+CreateButton(Col2, "👑 Максимальная Графика RT", UDim2.new(0, 0, 0, 45), function(btn)
+    task.spawn(function()
+        settings().Rendering.QualityLevel = Enum.QualityLevel.Level21
+        game:GetService("Lighting").GlobalShadows = true
+        for _, e in pairs(game:GetService("Lighting"):GetChildren()) do
+            if e:IsA("PostEffect") or e:IsA("BloomEffect") or e:IsA("BlurEffect") or e:IsA("SunRaysEffect") then e.Enabled = true end
+        end
+        local terrain = workspace:FindFirstChildOfClass("Terrain")
+        if terrain then terrain.WaterWaveSize = 1 terrain.WaterWaveSpeed = 1 terrain.Decoration = true end
+        btn.BackgroundColor3 = Color3.fromRGB(100, 30, 180) btn.Text = "Графика: Кинематографичная! 👑"
+    end)
+end)
+
+CreateButton(Col2, "🚀 Разблокировать FPS (999)", UDim2.new(0, 0, 0, 100), function(btn)
+    if setfpscap then setfpscap(999) btn.BackgroundColor3 = Color3.fromRGB(100, 30, 180) btn.Text = "FPS Кап снят! ✔"
+    else btn.Text = "Не поддерживается читом ❌" end
 end)
 
 CreateButton(Col3, "Пост-Очистка Мусора: OFF", UDim2.new(0, 0, 0, 45), function(btn)
@@ -376,25 +393,22 @@ UIS.InputBegan:Connect(function(input, gpe)
         local hum = LP.Character and LP.Character:FindFirstChild("Humanoid")
         if hum then for i=1,4 do hum:ChangeState(Enum.HumanoidStateType.Jumping) runDash() task.wait(0.02) end end
     elseif input.KeyCode == Enum.KeyCode.Z and Toggles.Oreo then clickMouse() task.wait(0.22) runDash() task.wait(0.04) useSkill(1)
-    elseif input.KeyCode == Enum.KeyCode.X and Toggles.King then clickMouse() task.wait(0.1) useSkill(2)
-    elseif input.KeyCode == Enum.KeyCode.C and Toggles.Supa then clickMouse() task.wait(0.1) runDash() task.wait(0.02) useSkill(3)
-    end
+elseif input.KeyCode == Enum.KeyCode.X and Toggles.King then clickMouse() task.wait(0.1) useSkill(2)
+elseif input.KeyCode == Enum.KeyCode.C and Toggles.Supa then clickMouse() task.wait(0.1) runDash() task.wait(0.02) useSkill(3)
+end
 end)
-
 workspace.DescendantAdded:Connect(function(desc)
-    if Toggles.AutoClear and (desc:IsA("ParticleEmitter") or desc:IsA("Smoke") or desc:IsA("Sparkles")) then
-        task.wait(0.05) pcall(function() if desc and desc.Parent then desc:Destroy() end end)
-    end
-    if Toggles.AutoTrails and (desc:IsA("Beam") or desc:IsA("Trail")) then pcall(function() desc.Enabled = false end) end
+if Toggles.AutoClear and (desc:IsA("ParticleEmitter") or desc:IsA("Smoke") or desc:IsA("Sparkles")) then
+task.wait(0.05) pcall(function() if desc and desc.Parent then desc:Destroy() end end)
+end
+if Toggles.AutoTrails and (desc:IsA("Beam") or desc:IsA("Trail")) then pcall(function() desc.Enabled = false end) end
 end)
-
 Players.PlayerAdded:Connect(function(p)
-    p.CharacterAdded:Connect(function(char)
-        if Toggles.EspToggle then task.wait(0.5) local h = Instance.new("Highlight", char) h.FillColor = Color3.fromRGB(150, 0, 255) end
-    end)
+p.CharacterAdded:Connect(function(char)
+if Toggles.EspToggle then task.wait(0.5) local h = Instance.new("Highlight", char) h.FillColor = Color3.fromRGB(150, 0, 255) end
 end)
-
+end)
 local MobileToggleButton = Instance.new("TextButton")
 MobileToggleButton.Name = "MobileToggle" local uiS = Instance.new("UIStroke", MobileToggleButton) uiS.Thickness = 1.5 uiS.Color = Color3.fromRGB(138, 43, 226)
 MobileToggleButton.Parent = ScreenGui MobileToggleButton.Position = UDim2.new(0.02, 0, 0.15, 0) MobileToggleButton.Size = UDim2.new(0, 45, 0, 45) MobileToggleButton.BackgroundColor3 = Color3.fromRGB(12, 12, 14) MobileToggleButton.Text = "⚙️" MobileToggleButton.TextSize = 20 MobileToggleButton.TextColor3 = Color3.fromRGB(180, 100, 255) round(MobileToggleButton, 22) MobileToggleButton.MouseButton1Click:Connect(ToggleGui)
-tabs["col1"].Btn.BackgroundColor3 = Color3.fromRGB(100, 30, 180) tabs["col1"].Btn.TextColor3 = Color3.fromRGB(255, 255, 255) tabs["col1"].Page.Visible = true
+tabs["col1"].Btn.BackgroundColor3 = Color3.fromRGB(100, 30, 180) tabs["col1"].Btn.TextColor3 = Color3.fromRGB(255, 255, 255) tabs["col1"].Page.Visible = true       
