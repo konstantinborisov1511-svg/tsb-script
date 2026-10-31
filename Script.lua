@@ -84,6 +84,7 @@ BindInfo.Text = "[ Нажмите K для скрытия ]"
 BindInfo.TextColor3 = Color3.fromRGB(130, 130, 150)
 BindInfo.TextSize = 12
 BindInfo.TextXAlignment = Enum.TextXAlignment.Right
+
 local WelcomeFrame = Instance.new("Frame")
 WelcomeFrame.Parent = ScreenGui
 WelcomeFrame.BackgroundColor3 = Color3.fromRGB(12, 12, 14)
@@ -114,7 +115,6 @@ task.spawn(function()
     WelcomeFrame:Destroy()
     MainFrame.Visible = true
 end)
-
 local dragging, dragInput, dragStart, startPos
 MainFrame.InputBegan:Connect(function(input)
     if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
@@ -147,6 +147,7 @@ UIS.InputBegan:Connect(function(input, gpe)
     if gpe then return end
     if input.KeyCode == Enum.KeyCode.K then ToggleGui() end
 end)
+
 local tabs = {}
 local function CreateTab(name, id)
     local TabPage = Instance.new("Frame")
@@ -239,11 +240,10 @@ local Col10 = CreateTab("10. Камера и Бой", "col10")
 CreateButton(Col1, "🔥 Экстремальный Буст FPS x3", UDim2.new(0, 0, 0, 45), function(btn)
     Toggles.ExtremeFPS = not Toggles.ExtremeFPS
     updateBtnVisual(btn, Toggles.ExtremeFPS, "🔥 Буст x3: АКТИВИРОВАН ✔", "🔥 Экстремальный Буст FPS x3")
-    
     task.spawn(function()
         while Toggles.ExtremeFPS do
             pcall(function()
-                gcinfo() -- Очистка Lua-мусора из оперативной памяти
+                gcinfo()
                 settings().Rendering.QualityLevel = Enum.QualityLevel.Level01
             end)
             task.wait(1)
@@ -322,7 +322,7 @@ CreateButton(Col5, "✨ Вырезать Шлейфы", UDim2.new(0, 0, 0, 45), 
     end
 end)
 
-CreateButton(Col6, "⚙️ Движок на Минимум", UDim2.new(0, 0, 0, 45), function(btn)
+CreateButton(Col6, "⚙️ Движок на Предпочтение", UDim2.new(0, 0, 0, 45), function(btn)
     Toggles.LowRender = not Toggles.LowRender
     updateBtnVisual(btn, Toggles.LowRender, "⚙️ Лоу-Режим: АКТИВЕН ✔", "⚙️ Движок на Минимум")
     settings().Rendering.QualityLevel = Toggles.LowRender and Enum.QualityLevel.Level01 or Enum.QualityLevel.Automatic
@@ -363,7 +363,6 @@ end
 CreateButton(Col9, "Auto Oreo [Z]: OFF", UDim2.new(0, 0, 0, 45), function(btn) Toggles.Oreo = not Toggles.Oreo updateBtnVisual(btn, Toggles.Oreo, "Auto Oreo [Z]: ON ✔", "Auto Oreo [Z]: OFF") end)
 CreateButton(Col9, "Auto King [X]: OFF", UDim2.new(0, 0, 0, 100), function(btn) Toggles.King = not Toggles.King updateBtnVisual(btn, Toggles.King, "Auto King [X]: ON ✔", "Auto King [X]: OFF") end)
 CreateButton(Col9, "Auto Supa [C]: OFF", UDim2.new(0, 0, 0, 155), function(btn) Toggles.Supa = not Toggles.Supa updateBtnVisual(btn, Toggles.Supa, "Auto Supa [C]: ON ✔", "Auto Supa [C]: OFF") end)
-
 CreateButton(Col10, "🎯 Плавный CamLock: OFF", UDim2.new(0, 0, 0, 45), function(btn) Toggles.CamLock = not Toggles.CamLock updateBtnVisual(btn, Toggles.CamLock, "🎯 Плавный CamLock: ON ✔", "🎯 Плавный CamLock: OFF") end)
 CreateButton(Col10, "🔒 Мобильный ShiftLock: OFF", UDim2.new(0, 0, 0, 100), function(btn) Toggles.MobileShift = not Toggles.MobileShift updateBtnVisual(btn, Toggles.MobileShift, "🔒 Мобильный ShiftLock: ON ✔", "🔒 Мобильный ShiftLock: OFF") LP.DevEnableMouseLock = Toggles.MobileShift end)
 
@@ -402,23 +401,40 @@ UIS.InputBegan:Connect(function(input, gpe)
     elseif input.KeyCode == Enum.KeyCode.V and Toggles.Ragdoll then
         local hum = LP.Character and LP.Character:FindFirstChild("Humanoid")
         if hum then for i=1,4 do hum:ChangeState(Enum.HumanoidStateType.Jumping) runDash() task.wait(0.02) end end
-        elseif input.KeyCode == Enum.KeyCode.Z and Toggles.Oreo then clickMouse() task.wait(0.22) runDash() task.wait(0.04) useSkill(1)
-elseif input.KeyCode == Enum.KeyCode.X and Toggles.King then clickMouse() task.wait(0.1) useSkill(2)
-elseif input.KeyCode == Enum.KeyCode.C and Toggles.Supa then clickMouse() task.wait(0.1) runDash() task.wait(0.02) useSkill(3)
-end
+    elseif input.KeyCode == Enum.KeyCode.Z and Toggles.Oreo then clickMouse() task.wait(0.22) runDash() task.wait(0.04) useSkill(1)
+    elseif input.KeyCode == Enum.KeyCode.X and Toggles.King then clickMouse() task.wait(0.1) useSkill(2)
+    elseif input.KeyCode == Enum.KeyCode.C and Toggles.Supa then clickMouse() task.wait(0.1) runDash() task.wait(0.02) useSkill(3)
+    end
 end)
+
 workspace.DescendantAdded:Connect(function(desc)
-if Toggles.AutoClear and (desc:IsA("ParticleEmitter") or desc:IsA("Smoke") or desc:IsA("Sparkles")) then
-task.wait(0.05) pcall(function() if desc and desc.Parent then desc:Destroy() end end)
-end
-if Toggles.AutoTrails and (desc:IsA("Beam") or desc:IsA("Trail")) then pcall(function() desc.Enabled = false end) end
+    if Toggles.AutoClear and (desc:IsA("ParticleEmitter") or desc:IsA("Smoke") or desc:IsA("Sparkles")) then
+        task.wait(0.05) pcall(function() if desc and desc.Parent then desc:Destroy() end end)
+    end
+    if Toggles.AutoTrails and (desc:IsA("Beam") or desc:IsA("Trail")) then pcall(function() desc.Enabled = false end) end
 end)
+
 Players.PlayerAdded:Connect(function(p)
-p.CharacterAdded:Connect(function(char)
-if Toggles.EspToggle then task.wait(0.5) local h = Instance.new("Highlight", char) h.FillColor = Color3.fromRGB(150, 0, 255) end
+    p.CharacterAdded:Connect(function(char)
+        if Toggles.EspToggle then task.wait(0.5) local h = Instance.new("Highlight", char) h.FillColor = Color3.fromRGB(150, 0, 255) end
+    end)
 end)
-end)
+
 local MobileToggleButton = Instance.new("TextButton")
-MobileToggleButton.Name = "MobileToggle" local uiS = Instance.new("UIStroke", MobileToggleButton) uiS.Thickness = 1.5 uiS.Color = Color3.fromRGB(138, 43, 226)
-MobileToggleButton.Parent = ScreenGui MobileToggleButton.Position = UDim2.new(0.02, 0, 0.15, 0) MobileToggleButton.Size = UDim2.new(0, 45, 0, 45) MobileToggleButton.BackgroundColor3 = Color3.fromRGB(12, 12, 14) MobileToggleButton.Text = "⚙️" MobileToggleButton.TextSize = 20 MobileToggleButton.TextColor3 = Color3.fromRGB(180, 100, 255) round(MobileToggleButton, 22) MobileToggleButton.MouseButton1Click:Connect(ToggleGui)
-tabs["col1"].Btn.BackgroundColor3 = Color3.fromRGB(100, 30, 180) tabs["col1"].Btn.TextColor3 = Color3.fromRGB(255, 255, 255) tabs["col1"].Page.Visible = true
+MobileToggleButton.Name = "MobileToggle" 
+local uiS = Instance.new("UIStroke", MobileToggleButton) 
+uiS.Thickness = 1.5 
+uiS.Color = Color3.fromRGB(138, 43, 226)
+MobileToggleButton.Parent = ScreenGui 
+MobileToggleButton.Position = UDim2.new(0.02, 0, 0.15, 0) 
+MobileToggleButton.Size = UDim2.new(0, 45, 0, 45) 
+MobileToggleButton.BackgroundColor3 = Color3.fromRGB(12, 12, 14) 
+MobileToggleButton.Text = "⚙️" 
+MobileToggleButton.TextSize = 20 
+MobileToggleButton.TextColor3 = Color3.fromRGB(180, 100, 255) 
+round(MobileToggleButton, 22) 
+MobileToggleButton.MouseButton1Click:Connect(ToggleGui)
+
+tabs["col1"].Btn.BackgroundColor3 = Color3.fromRGB(100, 30, 180) 
+tabs["col1"].Btn.TextColor3 = Color3.fromRGB(255, 255, 255) 
+tabs["col1"].Page.Visible = true
