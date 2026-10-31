@@ -1,69 +1,483 @@
-local old=game:GetService("CoreGui"):FindFirstChild("TSB_Advanced_Booster") or game:GetService("Players").LocalPlayer:FindFirstChildOfClass("PlayerGui"):FindFirstChild("TSB_Advanced_Booster")
-if old then old:Destroy() end
-local UIS,TS,Players=game:GetService("UserInputService"),game:GetService("TweenService"),game:GetService("Players")
-local LP,VIM=Players.LocalPlayer,game:GetService("VirtualInputManager")
-_G.Toggles={SideDash=false,DownSlam=false,Ragdoll=false,Oreo=false,King=false,Supa=false,AutoClear=false,AutoTrails=false,LowRender=false,CustomFog=false,CamLock=false,MobileShift=false,EspToggle=false,Disable3D=false,ExtremeFPS=false}
-_G.CamKey,_G.IsBind,guiEx=Enum.KeyCode.CapsLock,false,true
-local SG=Instance.new("ScreenGui")SG.Name="TSB_Advanced_Booster"SG.ResetOnSpawn=false
-pcall(function()SG.Parent=game:GetService("CoreGui")end)if not SG.Parent then SG.Parent=LP:WaitForChild("PlayerGui")end
-local MF=Instance.new("Frame")MF.Name="MainFrame"MF.Parent=SG;MF.BackgroundColor3=Color3.fromRGB(12,12,14)MF.BorderColor3=Color3.fromRGB(138,43,226)MF.BorderSizePixel=1;MF.Position=UDim2.new(0.05,0,0.25,0)MF.Size=UDim2.new(0,680,0,420)MF.Active=true;MF.ClipsDescendants=true;MF.Visible=false
-local function rnd(o,r)local c=Instance.new("UICorner")c.CornerRadius=UDim.new(0,r)c.Parent=o end
-rnd(MF,10)local Nav=Instance.new("ScrollingFrame")Nav.Name="Navigation"Nav.Parent=MF;Nav.BackgroundColor3=Color3.fromRGB(18,18,22)Nav.Position=UDim2.new(0,5,0,40)Nav.Size=UDim2.new(0,180,0,350)Nav.CanvasSize=UDim2.new(0,0,0,460)Nav.ScrollBarThickness=3;Nav.BorderSizePixel=0;rnd(Nav,6)
-local NL=Instance.new("UIListLayout")NL.Parent=Nav;NL.Padding=UDim.new(0,4)NL.HorizontalAlignment=Enum.HorizontalAlignment.Center
-local CF=Instance.new("Frame")CF.Name="ContentFrame"CF.Parent=MF;CF.BackgroundTransparency=1;CF.Position=UDim2.new(0,195,0,40)CF.Size=UDim2.new(0,475,0,350)
-_G.tabs,_G.Nav,_G.CF,_G.rnd,_G.SG,_G.MF={},Nav,CF,rnd,SG,MF
-local UIS,TS=game:GetService("UserInputService"),game:GetService("TweenService")
-local SG,MF,CF,Nav,rnd,tabs=_G.SG,_G.MF,_G.CF,_G.Nav,_G.rnd,_G.tabs
-local MT=Instance.new("TextLabel")MT.Parent=MF;MT.BackgroundTransparency=1;MT.Position=UDim2.new(0,15,0,5)MT.Size=UDim2.new(0,350,0,30)MT.Font=Enum.Font.SourceSansBold;MT.Text="⚡ ameba optimizer v7.0 (X3 HARD FPS BOOST)"
-MT.TextColor3=Color3.fromRGB(180,100,255)MT.TextSize=16;MT.TextXAlignment=Enum.TextXAlignment.Left
-local BI=Instance.new("TextLabel")BI.Parent=MF;BI.BackgroundTransparency=1;BI.Position=UDim2.new(0,500,0,395)BI.Size=UDim2.new(0,170,0,20)BI.Font=Enum.Font.SourceSansItalic;BI.Text="[ Нажмите K для скрытия ]"
-BI.TextColor3=Color3.fromRGB(130,130,150)BI.TextSize=12;BI.TextXAlignment=Enum.TextXAlignment.Right
-local WF=Instance.new("Frame")WF.Parent=SG;WF.BackgroundColor3=Color3.fromRGB(12,12,14)WF.Position=UDim2.new(0.5,-175,0.5,-50)WF.Size=UDim2.new(0,350,0,100)rnd(WF,10)
-local WS=Instance.new("UIStroke")WS.Thickness=1.5;WS.Color=Color3.fromRGB(150,0,255)WS.Parent=WF
-local WT=Instance.new("TextLabel")WT.Parent=WF;WT.BackgroundTransparency=1;WT.Size=UDim2.new(1,0,1,0)WT.Font=Enum.Font.SourceSansBold;WT.Text="ameba optimizer HARDCORE X3 ACTIVE"
-WT.TextColor3=Color3.fromRGB(180,100,255)WT.TextSize=16
-task.spawn(function()task.wait(1.2)TS:Create(WF,TweenInfo.new(0.4),{BackgroundTransparency=1}):Play()TS:Create(WT,TweenInfo.new(0.4),{TextTransparency=1}):Play()TS:Create(WS,TweenInfo.new(0.4),{Transparency=1}):Play()task.wait(0.4)WF:Destroy()MF.Visible=true end)
-local drg,di,ds,sp
-MF.InputBegan:Connect(function(i)if i.UserInputType==Enum.UserInputType.MouseButton1 or i.UserInputType==Enum.UserInputType.Touch then drg=true;ds=i.Position;sp=MF.Position;i.Changed:Connect(function()if i.UserInputState==Enum.UserInputState.End then drg=false end end)end end)
-MF.InputChanged:Connect(function(i)if i.UserInputType==Enum.UserInputType.MouseMovement or i.UserInputType==Enum.UserInputType.Touch then di=i end end)
-UIS.InputChanged:Connect(function(i)if i==di and drg then local d=i.Position-ds;MF.Position=UDim2.new(sp.X.Scale,sp.X.Offset+d.X,sp.Y.Scale,sp.Y.Offset+d.Y)end end)
-_G.TglGui=function()guiEx=not guiEx;MF.Visible=guiEx end
-UIS.InputBegan:Connect(function(i,g)if not g and i.KeyCode==Enum.KeyCode.K then _G.TglGui() end end)
-_G.CTab=function(n,id)local P=Instance.new("Frame")P.Name=id.."Page"P.Parent=CF;P.BackgroundTransparency=1;P.Size=UDim2.new(1,0,1,0)P.Visible=false
-local T=Instance.new("TextLabel")T.Parent=P;T.BackgroundTransparency=1;T.Size=UDim2.new(1,0,0,30)T.Font=Enum.Font.SourceSansBold;T.Text="СТОЛБЕЦ: "..n:upper()
-T.TextColor3=Color3.fromRGB(200,150,255)T.TextSize=15;local B=Instance.new("TextButton")B.Parent=Nav;B.BackgroundColor3=Color3.fromRGB(26,26,32)B.Size=UDim2.new(0,165,0,38)B.Font=Enum.Font.SourceSansBold;B.Text=n;B.TextColor3=Color3.fromRGB(200,200,220)B.TextSize=11;rnd(B,4)local s=Instance.new("UIStroke")s.Thickness=1;s.Color=Color3.fromRGB(45,45,55)s.Parent=B
-B.MouseButton1Click:Connect(function()for _,t in pairs(tabs)do t.P.Visible=false;t.B.BackgroundColor3=Color3.fromRGB(26,26,32)t.B.TextColor3=Color3.fromRGB(200,200,220)end;P.Visible=true;B.BackgroundColor3=Color3.fromRGB(100,30,180)B.TextColor3=Color3.fromRGB(255,255,255)end)tabs[id]={P=P,B=B}return P end
-_G.CBtn=function(p,t,pos,cb)local B=Instance.new("TextButton")B.Parent=p;B.BackgroundColor3=Color3.fromRGB(22,18,30)B.Position=pos;B.Size=UDim2.new(0,230,0,45)B.Font=Enum.Font.SourceSansBold;B.Text=t;B.TextColor3=Color3.fromRGB(230,220,255)B.TextSize=13;rnd(B,6)local s=Instance.new("UIStroke")s.Thickness=1;s.Color=Color3.fromRGB(80,40,120)s.Parent=B;B.MouseButton1Click:Connect(function()cb(B)end)return B end
-_G.upBtn=function(b,s,on,off)b.BackgroundColor3=s and Color3.fromRGB(100,30,180) or Color3.fromRGB(22,18,30)b.Text=s and on or off end
-local Toggles,CTab,CBtn,upBtn=_G.Toggles,_G.CTab,_G.CBtn,_G.upBtn
-local c1,c2,c3,c4,c5,c6,c7=_G.CTab("1. ХАРДКОР ОПТИМИЗАЦИЯ","col1"),_G.CTab("2. Ультра Графика","col2"),_G.CTab("3. Очистка Мусора","col3"),_G.CTab("4. Атмосфера","col4"),_G.CTab("5. Шлейфы","col5"),_G.CTab("6. Движок","col6"),_G.CTab("7. Базовые Течи","col7")
-CBtn(c1,"🔥 Экстремальный Буст FPS x3",UDim2.new(0,0,0,45),function(b)Toggles.ExtremeFPS=not Toggles.ExtremeFPS;upBtn(b,Toggles.ExtremeFPS,"🔥 Буст x3: АКТИВИРОВАН ✔","🔥 Экстремальный Буст FPS x3")task.spawn(function()while Toggles.ExtremeFPS do pcall(function()gcinfo()settings().Rendering.QualityLevel=Enum.QualityLevel.Level01 end)task.wait(1)end end)end)
-CBtn(c1,"💀 Вырезать Освещение и Небо",UDim2.new(0,0,0,100),function(b)pcall(function()game:GetService("Lighting").GlobalShadows=false;game:GetService("Lighting").EnvironmentSpecularScale=0;game:GetService("Lighting").EnvironmentDiffuseScale=0;local s=game:GetService("Lighting"):FindFirstChildOfClass("Sky")if s then s:Destroy() end;b.BackgroundColor3=Color3.fromRGB(100,30,180)b.Text="Небо и Свет Удалены! ✔"end)end)
-CBtn(c1,"🚫 Отключить 3D Рендер (AFK)",UDim2.new(0,0,0,155),function(b)Toggles.Disable3D=not Toggles.Disable3D;upBtn(b,Toggles.Disable3D,"🚫 3D Рендер: ВЫКЛЮЧЕН ✔","🚫 Отключить 3D Рендер (AFK)")game:GetService("RunService"):Set3DRenderingEnabled(not Toggles.Disable3D)end)
-CBtn(c2,"👑 Максимальная Графика RT",UDim2.new(0,0,0,45),function(b)task.spawn(function()settings().Rendering.QualityLevel=Enum.QualityLevel.Level21;game:GetService("Lighting").GlobalShadows=true;for _,e in pairs(game:GetService("Lighting"):GetChildren()) do if e:IsA("PostEffect") or e:IsA("BloomEffect") or e:IsA("BlurEffect") or e:IsA("SunRaysEffect") then e.Enabled=true end end;local t=workspace:FindFirstChildOfClass("Terrain")if t then t.WaterWaveSize=1;t.WaterWaveSpeed=1;t.Decoration=true end;b.BackgroundColor3=Color3.fromRGB(100,30,180)b.Text="Графика: Кинематографичная! 👑"end)end)
-CBtn(c2,"🚀 Разблокировать FPS (999)",UDim2.new(0,0,0,100),function(b)if setfpscap then setfpscap(999)b.BackgroundColor3=Color3.fromRGB(100,30,180)b.Text="FPS Кап снят! ✔"else b.Text="Не поддерживается читом ❌"end end)
-CBtn(c3,"Пост-Очистка Мусора: OFF",UDim2.new(0,0,0,45),function(b)Toggles.AutoClear=not Toggles.AutoClear;upBtn(b,Toggles.AutoClear,"Пост-Очистка Мусора: ON ✔","Пост-Очистка Мусора: OFF")if Toggles.AutoClear then task.spawn(function()for _,v in ipairs(workspace:GetDescendants()) do if v:IsA("ParticleEmitter") or v:IsA("Trail") or v:IsA("Smoke") or v:IsA("Sparkles") then pcall(function()v:Destroy()end)end end end)end end)
-CBtn(c4,"🔮 Фиолетовый Туман",UDim2.new(0,0,0,45),function(b)Toggles.CustomFog=not Toggles.CustomFog;upBtn(b,Toggles.CustomFog,"🔮 Туман: ON ✔","🔮 Фиолетовый Туман")if Toggles.CustomFog then game:GetService("Lighting").FogStart=30;game:GetService("Lighting").FogEnd=120;game:GetService("Lighting").FogColor=Color3.fromRGB(12,12,14)else game:GetService("Lighting").FogStart=0;game:GetService("Lighting").FogEnd=999999 end end)
-local hidT={}
-CBtn(c5,"✨ Вырезать Шлейфы",UDim2.new(0,0,0,45),function(b)Toggles.AutoTrails=not Toggles.AutoTrails;upBtn(b,Toggles.AutoTrails,"✨ Шлейфы: ВЫРЕЗАНЫ ✔","✨ Вырезать Шлейфы")if Toggles.AutoTrails then for _,v in pairs(workspace:GetDescendants()) do if v:IsA("Beam") or v:IsA("Trail") then if v.Enabled then table.insert(hidT,v)v.Enabled=false end end end else for _,v in pairs(hidT) do if v and v.Parent then v.Enabled=true end end;table.clear(hidT)end end)
-CBtn(c6,"⚙️ Движок на Предпочтение",UDim2.new(0,0,0,45),function(b)Toggles.LowRender=not Toggles.LowRender;upBtn(b,Toggles.LowRender,"⚙️ Лоу-Режим: АКТИВЕН ✔","⚙️ Движок на Минимум")settings().Rendering.QualityLevel=Toggles.LowRender and Enum.QualityLevel.Level01 or Enum.QualityLevel.Automatic end)
-CBtn(c7,"Side Dash [T]: OFF",UDim2.new(0,0,0,45),function(b)Toggles.SideDash=not Toggles.SideDash;upBtn(b,Toggles.SideDash,"Side Dash [T]: ON ✔","Side Dash [T]: OFF")end)
-CBtn(c7,"Down Slam [G]: OFF",UDim2.new(0,0,0,100),function(b)Toggles.DownSlam=not Toggles.DownSlam;upBtn(b,Toggles.DownSlam,"Down Slam [G]: ON ✔","Down Slam [G]: OFF")end)
-CBtn(c7,"Ragdoll Cancel [V]: OFF",UDim2.new(0,0,0,155),function(b)Toggles.Ragdoll=not Toggles.Ragdoll;upBtn(b,Toggles.Ragdoll,"Ragdoll Cancel [V]: ON ✔","Ragdoll Cancel [V]: OFF")end)
-local UIS,Players,LP=game:GetService("UserInputService"),game:GetService("Players"),game:GetService("Players").LocalPlayer
-local Toggles,upBtn,press,tapM1,CLB,BCLB=_G.Toggles,_G.upBtn,_G.press,_G.tapM1,_G.CLB,_G.BCLB
-local function getCls()local c,d=nil,math.huge;for _,p in ipairs(Players:GetPlayers()) do if p~=LP and p.Character and p.Character:FindFirstChild("HumanoidRootPart") and LP.Character and LP.Character:FindFirstChild("HumanoidRootPart") then local dist=(p.Character.HumanoidRootPart.Position-LP.Character.HumanoidRootPart.Position).Magnitude;if dist<d and dist<150 then c=p.Character.HumanoidRootPart;d=dist end end end;return c end
-game:GetService("RunService").RenderStepped:Connect(function()if Toggles.CamLock then local t=getCls()if t then workspace.CurrentCamera.CFrame=CFrame.new(workspace.CurrentCamera.CFrame.Position,t.Position)end end end)
-UIS.InputBegan:Connect(function(i,g)if _G.IsBind then if i.KeyCode~=Enum.KeyCode.Unknown and i.KeyCode~=Enum.KeyCode.K then _G.CamKey=i.KeyCode;_G.IsBind=false;BCLB.Text="🎹 Бинд CamLock: [ "..i.KeyCode.Name.." ]"BCLB.BackgroundColor3=Color3.fromRGB(22,18,30)end;return end;if g then return end
-if i.KeyCode==_G.CamKey then Toggles.CamLock=not Toggles.CamLock;upBtn(CLB,Toggles.CamLock,"🎯 Плавный CamLock: ON ✔","🎯 Плавный CamLock: OFF")
-elseif i.KeyCode==Enum.KeyCode.T and Toggles.SideDash then press(Enum.KeyCode.Q)press(Enum.KeyCode.A)
-elseif i.KeyCode==Enum.KeyCode.G and Toggles.DownSlam then press(Enum.KeyCode.Space)task.wait(0.18)tapM1()
-elseif i.KeyCode==Enum.KeyCode.V and Toggles.Ragdoll then for x=1,3 do press(Enum.KeyCode.Space)task.wait(0.05)end
-elseif i.KeyCode==Enum.KeyCode.Z and Toggles.Oreo then tapM1()task.wait(0.1)press(Enum.KeyCode.Q)task.wait(0.1)press(Enum.KeyCode.One)
-elseif i.KeyCode==Enum.KeyCode.X and Toggles.King then for x=1,3 do tapM1()task.wait(0.2)end;press(Enum.KeyCode.Two)
-elseif i.KeyCode==Enum.KeyCode.C and Toggles.Supa then press(Enum.KeyCode.Q)task.wait(0.05)press(Enum.KeyCode.Three)end end)
-workspace.DescendantAdded:Connect(function(d)if Toggles.AutoClear and (d:IsA("ParticleEmitter") or d:IsA("Smoke") or d:IsA("Sparkles")) then task.wait(0.05)pcall(function()if d and d.Parent then d:Destroy()end end)end;if Toggles.AutoTrails and (d:IsA("Beam") or d:IsA("Trail")) then pcall(function()d.Enabled=false end)end end)
-Players.PlayerAdded:Connect(function(p)p.CharacterAdded:Connect(function(c)if Toggles.EspToggle then task.wait(0.5)local h=Instance.new("Highlight",c)h.FillColor=Color3.fromRGB(150,0,255)end end)end)
-local SG=game:GetService("CoreGui"):FindFirstChild("TSB_Advanced_Booster") or LP:WaitForChild("PlayerGui"):FindFirstChild("TSB_Advanced_Booster")
-local MTB=Instance.new("TextButton")MTB.Name="MobileToggle"local uS=Instance.new("UIStroke",MTB)uS.Thickness=1.5;uS.Color=Color3.fromRGB(138,43,226)MTB.Parent=SG;MTB.Position=UDim2.new(0.02,0,0.15,0)MTB.Size=UDim2.new(0,45,0,45)MTB.BackgroundColor3=Color3.fromRGB(12,12,14)MTB.Text="⚙️"MTB.TextSize=20;MTB.TextColor3=Color3.fromRGB(180,100,255)_G.rnd(MTB,22)MTB.MouseButton1Click:Connect(_G.TglGui)
-_G.tabs["col1"].B.BackgroundColor3=Color3.fromRGB(100,30,180)_G.tabs["col1"].B.TextColor3=Color3.fromRGB(255,255,255)_G.tabs["col1"].P.Visible=true
+local old_gui = game:GetService("CoreGui"):FindFirstChild("TSB_Advanced_Booster") or game:GetService("Players").LocalPlayer:FindFirstChildOfClass("PlayerGui"):FindFirstChild("TSB_Advanced_Booster")
+if old_gui then old_gui:Destroy() end
+
+local UIS = game:GetService("UserInputService")
+local TS = game:GetService("TweenService")
+local Players = game:GetService("Players")
+local LP = Players.LocalPlayer
+local VIM = game:GetService("VirtualInputManager")
+
+_G.Toggles = {
+    SideDash = false, DownSlam = false, Ragdoll = false,
+    Oreo = false, King = false, Supa = false,
+    AutoClear = false, AutoTrails = false, LowRender = false, CustomFog = false,
+    CamLock = false, MobileShift = false, EspToggle = false, Disable3D = false,
+    ExtremeFPS = false
+}
+
+_G.CamLockKey = Enum.KeyCode.CapsLock
+_G.IsBindingCamLock = false
+local guiExpanded = true
+
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "TSB_Advanced_Booster"
+ScreenGui.ResetOnSpawn = false
+pcall(function() ScreenGui.Parent = game:GetService("CoreGui") end)
+if not ScreenGui.Parent then ScreenGui.Parent = LP:WaitForChild("PlayerGui") end
+
+local MainFrame = Instance.new("Frame")
+MainFrame.Name = "MainFrame"
+MainFrame.Parent = ScreenGui
+MainFrame.BackgroundColor3 = Color3.fromRGB(12, 12, 14)
+MainFrame.BorderColor3 = Color3.fromRGB(138, 43, 226)
+MainFrame.BorderSizePixel = 1
+MainFrame.Position = UDim2.new(0.05, 0, 0.25, 0)
+MainFrame.Size = UDim2.new(0, 680, 0, 420)
+MainFrame.Active = true
+MainFrame.ClipsDescendants = true
+MainFrame.Visible = false 
+
+local function round(obj, r)
+    local c = Instance.new("UICorner")
+    c.CornerRadius = UDim.new(0, r)
+    c.Parent = obj
+end
+round(MainFrame, 10)
+
+local WelcomeFrame = Instance.new("Frame")
+WelcomeFrame.Parent = ScreenGui
+WelcomeFrame.BackgroundColor3 = Color3.fromRGB(12, 12, 14)
+WelcomeFrame.Position = UDim2.new(0.5, -175, 0.5, -50)
+WelcomeFrame.Size = UDim2.new(0, 350, 0, 100)
+round(WelcomeFrame, 10)
+
+local welcomeStroke = Instance.new("UIStroke")
+welcomeStroke.Thickness = 1.5
+welcomeStroke.Color = Color3.fromRGB(150, 0, 255)
+welcomeStroke.Parent = WelcomeFrame
+
+local WelcomeText = Instance.new("TextLabel")
+WelcomeText.Parent = WelcomeFrame
+WelcomeText.BackgroundTransparency = 1
+WelcomeText.Size = UDim2.new(1, 0, 1, 0)
+WelcomeText.Font = Enum.Font.SourceSansBold
+WelcomeText.Text = "ameba optimizer HARDCORE X3 ACTIVE"
+WelcomeText.TextColor3 = Color3.fromRGB(180, 100, 255)
+WelcomeText.TextSize = 16
+
+task.spawn(function()
+    task.wait(1.2)
+    TS:Create(WelcomeFrame, TweenInfo.new(0.4), {BackgroundTransparency = 1}):Play()
+    TS:Create(WelcomeText, TweenInfo.new(0.4), {TextTransparency = 1}):Play()
+    TS:Create(welcomeStroke, TweenInfo.new(0.4), {Transparency = 1}):Play()
+    task.wait(0.4)
+    WelcomeFrame:Destroy()
+    MainFrame.Visible = true
+end)
+
+local dragging, dragInput, dragStart, startPos
+MainFrame.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        dragging = true
+        dragStart = input.Position
+        startPos = MainFrame.Position
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then dragging = false end
+        end)
+    end
+end)
+MainFrame.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+        dragInput = input
+    end
+end)
+UIS.InputChanged:Connect(function(input)
+    if input == dragInput and dragging then
+        local delta = input.Position - dragStart
+        MainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+    end
+end)
+
+_G.ToggleGui = function()
+    guiExpanded = not guiExpanded
+    MainFrame.Visible = guiExpanded
+end
+UIS.InputBegan:Connect(function(input, gpe)
+    if gpe then return end
+    if input.KeyCode == Enum.KeyCode.K then _G.ToggleGui() end
+end)
+
+_G.ScreenGui, _G.MainFrame, _G.round = ScreenGui, MainFrame, round
+local ScreenGui, MainFrame, round = _G.ScreenGui, _G.MainFrame, _G.round
+local Navigation = Instance.new("ScrollingFrame")
+Navigation.Name = "Navigation"
+Navigation.Parent = MainFrame
+Navigation.BackgroundColor3 = Color3.fromRGB(18, 18, 22)
+Navigation.Position = UDim2.new(0, 5, 0, 40)
+Navigation.Size = UDim2.new(0, 180, 0, 350)
+Navigation.CanvasSize = UDim2.new(0, 0, 0, 460)
+Navigation.ScrollBarThickness = 3
+Navigation.BorderSizePixel = 0
+round(Navigation, 6)
+
+local NavLayout = Instance.new("UIListLayout")
+NavLayout.Parent = Navigation
+NavLayout.Padding = UDim.new(0, 4)
+NavLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+
+local ContentFrame = Instance.new("Frame")
+ContentFrame.Name = "ContentFrame"
+ContentFrame.Parent = MainFrame
+ContentFrame.BackgroundTransparency = 1
+ContentFrame.Position = UDim2.new(0, 195, 0, 40)
+ContentFrame.Size = UDim2.new(0, 475, 0, 350)
+
+local MainTitle = Instance.new("TextLabel")
+MainTitle.Parent = MainFrame
+MainTitle.BackgroundTransparency = 1
+MainTitle.Position = UDim2.new(0, 15, 0, 5)
+MainTitle.Size = UDim2.new(0, 350, 0, 30)
+MainTitle.Font = Enum.Font.SourceSansBold
+MainTitle.Text = "⚡ ameba optimizer v7.0 (X3 HARD FPS BOOST)"
+MainTitle.TextColor3 = Color3.fromRGB(180, 100, 255)
+MainTitle.TextSize = 16
+MainTitle.TextXAlignment = Enum.TextXAlignment.Left
+
+local BindInfo = Instance.new("TextLabel")
+BindInfo.Parent = MainFrame
+BindInfo.BackgroundTransparency = 1
+BindInfo.Position = UDim2.new(0, 500, 0, 395)
+BindInfo.Size = UDim2.new(0, 170, 0, 20)
+BindInfo.Font = Enum.Font.SourceSansItalic
+BindInfo.Text = "[ Нажмите K для скрытия ]"
+BindInfo.TextColor3 = Color3.fromRGB(130, 130, 150)
+BindInfo.TextSize = 12
+BindInfo.TextXAlignment = Enum.TextXAlignment.Right
+
+_G.tabs = {}
+_G.CreateTab = function(name, id)
+    local TabPage = Instance.new("Frame")
+    TabPage.Name = id .. "Page"
+    TabPage.Parent = ContentFrame
+    TabPage.BackgroundTransparency = 1
+    TabPage.Size = UDim2.new(1, 0, 1, 0)
+    TabPage.Visible = false
+
+    local Title = Instance.new("TextLabel")
+    Title.Parent = TabPage
+    Title.BackgroundTransparency = 1
+    Title.Size = UDim2.new(1, 0, 0, 30)
+    Title.Font = Enum.Font.SourceSansBold
+    Title.Text = "СТОЛБЕЦ: " .. name:upper()
+    Title.TextColor3 = Color3.fromRGB(200, 150, 255)
+    Title.TextSize = 15
+
+    local NavBtn = Instance.new("TextButton")
+    NavBtn.Parent = Navigation
+    NavBtn.BackgroundColor3 = Color3.fromRGB(26, 26, 32)
+    NavBtn.Size = UDim2.new(0, 165, 0, 38)
+    NavBtn.Font = Enum.Font.SourceSansBold
+    NavBtn.Text = name
+    NavBtn.TextColor3 = Color3.fromRGB(200, 200, 220)
+    NavBtn.TextSize = 11
+    round(NavBtn, 4)
+    
+    local str = Instance.new("UIStroke")
+    str.Thickness = 1
+    str.Color = Color3.fromRGB(45, 45, 55)
+    str.Parent = NavBtn
+
+    NavBtn.MouseButton1Click:Connect(function()
+        for _, t in pairs(_G.tabs) do
+            t.Page.Visible = false
+            t.Btn.BackgroundColor3 = Color3.fromRGB(26, 26, 32)
+            t.Btn.TextColor3 = Color3.fromRGB(200, 200, 220)
+        end
+        TabPage.Visible = true
+        NavBtn.BackgroundColor3 = Color3.fromRGB(100, 30, 180)
+        NavBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    end)
+    _G.tabs[id] = {Page = TabPage, Btn = NavBtn}
+    return TabPage
+end
+
+_G.CreateButton = function(parent, text, pos, callback)
+    local Btn = Instance.new("TextButton")
+    Btn.Parent = parent
+    Btn.BackgroundColor3 = Color3.fromRGB(22, 18, 30)
+    Btn.Position = pos
+    Btn.Size = UDim2.new(0, 230, 0, 45)
+    Btn.Font = Enum.Font.SourceSansBold
+    Btn.Text = text
+    Btn.TextColor3 = Color3.fromRGB(230, 220, 255)
+    Btn.TextSize = 13
+    round(Btn, 6)
+    local s = Instance.new("UIStroke")
+    s.Thickness = 1
+    s.Color = Color3.fromRGB(80, 40, 120)
+    s.Parent = Btn
+    Btn.MouseButton1Click:Connect(function() callback(Btn) end)
+    return Btn
+end
+
+_G.updateBtnVisual = function(btn, state, onText, offText)
+    btn.BackgroundColor3 = state and Color3.fromRGB(100, 30, 180) or Color3.fromRGB(22, 18, 30)
+    btn.Text = state and onText or offText
+end
+local Toggles, CreateTab, CreateButton, updateBtnVisual = _G.Toggles, _G.CreateTab, _G.CreateButton, _G.updateBtnVisual
+
+local Col1 = CreateTab("1. ХАРДКОР ОПТИМИЗАЦИЯ", "col1")
+local Col2 = CreateTab("2. Ультра Графика", "col2")
+local Col3 = CreateTab("3. Очистка Мусора", "col3")
+local Col4 = CreateTab("4. Атмосфера", "col4")
+local Col5 = CreateTab("5. Шлейфы", "col5")
+local Col6 = CreateTab("6. Движок", "col6")
+local Col7 = CreateTab("7. Базовые Течи", "col7")
+
+CreateButton(Col1, "🔥 Экстремальный Буст FPS x3", UDim2.new(0, 0, 0, 45), function(btn)
+    Toggles.ExtremeFPS = not Toggles.ExtremeFPS
+    updateBtnVisual(btn, Toggles.ExtremeFPS, "🔥 Буст x3: АКТИВИРОВАН ✔", "🔥 Экстремальный Буст FPS x3")
+    task.spawn(function()
+        while Toggles.ExtremeFPS do
+            pcall(function()
+                gcinfo()
+                settings().Rendering.QualityLevel = Enum.QualityLevel.Level01
+            end)
+            task.wait(1)
+        end
+    end)
+end)
+
+CreateButton(Col1, "💀 Вырезать Освещение и Небо", UDim2.new(0, 0, 0, 100), function(btn)
+    pcall(function()
+        game:GetService("Lighting").GlobalShadows = false
+        game:GetService("Lighting").EnvironmentSpecularScale = 0
+        game:GetService("Lighting").EnvironmentDiffuseScale = 0
+        local sky = game:GetService("Lighting"):FindFirstChildOfClass("Sky")
+        if sky then sky:Destroy() end
+        btn.BackgroundColor3 = Color3.fromRGB(100, 30, 180) btn.Text = "Небо и Свет Удалены! ✔"
+    end)
+end)
+
+CreateButton(Col1, "🚫 Отключить 3D Рендер (AFK)", UDim2.new(0, 0, 0, 155), function(btn)
+    Toggles.Disable3D = not Toggles.Disable3D
+    updateBtnVisual(btn, Toggles.Disable3D, "🚫 3D Рендер: ВЫКЛЮЧЕН ✔", "🚫 Отключить 3D Рендер (AFK)")
+    game:GetService("RunService"):Set3DRenderingEnabled(not Toggles.Disable3D)
+end)
+
+CreateButton(Col2, "👑 Максимальная Графика RT", UDim2.new(0, 0, 0, 45), function(btn)
+    task.spawn(function()
+        settings().Rendering.QualityLevel = Enum.QualityLevel.Level21
+        game:GetService("Lighting").GlobalShadows = true
+        for _, e in pairs(game:GetService("Lighting"):GetChildren()) do
+            if e:IsA("PostEffect") or e:IsA("BloomEffect") or e:IsA("BlurEffect") or e:IsA("SunRaysEffect") then e.Enabled = true end
+        end
+        local terrain = workspace:FindFirstChildOfClass("Terrain")
+        if terrain then terrain.WaterWaveSize = 1 terrain.WaterWaveSpeed = 1 terrain.Decoration = true end
+        btn.BackgroundColor3 = Color3.fromRGB(100, 30, 180) btn.Text = "Графика: Кинематографичная! 👑"
+    end)
+end)
+
+CreateButton(Col2, "🚀 Разблокировать FPS (999)", UDim2.new(0, 0, 0, 100), function(btn)
+    if setfpscap then setfpscap(999) btn.BackgroundColor3 = Color3.fromRGB(100, 30, 180) btn.Text = "FPS Кап снят! ✔"
+    else btn.Text = "Не поддерживается читом ❌" end
+end)
+
+CreateButton(Col3, "Пост-Очистка Мусора: OFF", UDim2.new(0, 0, 0, 45), function(btn)
+    Toggles.AutoClear = not Toggles.AutoClear
+    updateBtnVisual(btn, Toggles.AutoClear, "Пост-Очистка Мусора: ON ✔", "Пост-Очистка Мусора: OFF")
+    if Toggles.AutoClear then
+        task.spawn(function()
+            for _, v in ipairs(workspace:GetDescendants()) do
+                if v:IsA("ParticleEmitter") or v:IsA("Trail") or v:IsA("Smoke") or v:IsA("Sparkles") then pcall(function() v:Destroy() end) end
+            end
+        end)
+    end
+end)
+
+CreateButton(Col4, "🔮 Фиолетовый Туман", UDim2.new(0, 0, 0, 45), function(btn)
+    Toggles.CustomFog = not Toggles.CustomFog
+    updateBtnVisual(btn, Toggles.CustomFog, "🔮 Туман: ON ✔", "🔮 Фиолетовый Туман")
+    if Toggles.CustomFog then
+        game:GetService("Lighting").FogStart = 30 game:GetService("Lighting").FogEnd = 120 game:GetService("Lighting").FogColor = Color3.fromRGB(12, 12, 14)
+    else
+        game:GetService("Lighting").FogStart = 0 game:GetService("Lighting").FogEnd = 999999
+    end
+end)
+
+local hiddenTrails = {}
+CreateButton(Col5, "✨ Вырезать Шлейфы", UDim2.new(0, 0, 0, 45), function(btn)
+    Toggles.AutoTrails = not Toggles.AutoTrails
+    updateBtnVisual(btn, Toggles.AutoTrails, "✨ Шлейфы: ВЫРЕЗАНЫ ✔", "✨ Вырезать Шлейфы")
+    if Toggles.AutoTrails then
+        for _, v in pairs(workspace:GetDescendants()) do
+            if v:IsA("Beam") or v:IsA("Trail") then if v.Enabled then table.insert(hiddenTrails, v) v.Enabled = false end end
+        end
+    else
+        for _, v in pairs(hiddenTrails) do if v and v.Parent then v.Enabled = true end end
+        table.clear(hiddenTrails)
+    end
+end)
+
+CreateButton(Col6, "⚙️ Движок на Предпочтение", UDim2.new(0, 0, 0, 45), function(btn)
+    Toggles.LowRender = not Toggles.LowRender
+    updateBtnVisual(btn, Toggles.LowRender, "⚙️ Лоу-Режим: АКТИВЕН ✔", "⚙️ Движок на Минимум")
+    settings().Rendering.QualityLevel = Toggles.LowRender and Enum.QualityLevel.Level01 or Enum.QualityLevel.Automatic
+end)
+
+CreateButton(Col7, "Side Dash [T]: OFF", UDim2.new(0, 0, 0, 45), function(btn) Toggles.SideDash = not Toggles.SideDash updateBtnVisual(btn, Toggles.SideDash, "Side Dash [T]: ON ✔", "Side Dash [T]: OFF") end)
+CreateButton(Col7, "Down Slam [G]: OFF", UDim2.new(0, 0, 0, 100), function(btn) Toggles.DownSlam = not Toggles.DownSlam updateBtnVisual(btn, Toggles.DownSlam, "Down Slam [G]: ON ✔", "Down Slam [G]: OFF") end)
+CreateButton(Col7, "Ragdoll Cancel [V]: OFF", UDim2.new(0, 0, 0, 155), function(btn) Toggles.Ragdoll = not Toggles.Ragdoll updateBtnVisual(btn, Toggles.Ragdoll, "Ragdoll Cancel [V]: ON ✔", "Ragdoll Cancel [V]: OFF") end)
+local Toggles, CreateTab, CreateButton, updateBtnVisual, Players, LP = _G.Toggles, _G.CreateTab, _G.CreateButton, _G.updateBtnVisual, game:GetService("Players"), game:GetService("Players").LocalPlayer
+local VIM = game:GetService("VirtualInputManager")
+
+local Col8 = CreateTab("8. Удары и ESP", "col8")
+local Col9 = CreateTab("9. Продвинутые Авто", "col9")
+local Col10 = CreateTab("10. Камера и Бой", "col10")
+
+_G.simulateKey = function(keycode)
+    VIM:SendKeyEvent(true, keycode, false, game)
+    task.wait(0.01)
+    VIM:SendKeyEvent(false, keycode, false, game)
+end
+
+_G.clickMouse = function()
+    pcall(function()
+        VIM:SendMouseButtonEvent(0, 0, 0, true, game, 0)
+        task.wait(0.01)
+        VIM:SendMouseButtonEvent(0, 0, 0, false, game, 0)
+    end)
+end
+
+CreateButton(Col8, "Тест Кликера M1", UDim2.new(0, 0, 0, 45), function(btn) _G.clickMouse() end)
+CreateButton(Col8, "👁 Включить Подсветку (ESP): OFF", UDim2.new(0, 0, 0, 100), function(btn)
+    Toggles.EspToggle = not Toggles.EspToggle
+    updateBtnVisual(btn, Toggles.EspToggle, "👁 Подсветку (ESP): ON ✔", "👁 Включить Подсветку (ESP): OFF")
+    for _, p in ipairs(Players:GetPlayers()) do
+        if p ~= LP and p.Character then
+            local box = p.Character:FindFirstChildOfClass("Highlight")
+            if box then box.Enabled = Toggles.EspToggle
+            elseif Toggles.EspToggle then
+                local h = Instance.new("Highlight", p.Character)
+                h.FillColor = Color3.fromRGB(150, 0, 255) h.OutlineColor = Color3.fromRGB(255, 255, 255)
+            end
+        end
+    end
+end)
+
+CreateButton(Col9, "Auto Oreo [Z]: OFF", UDim2.new(0, 0, 0, 45), function(btn) Toggles.Oreo = not Toggles.Oreo updateBtnVisual(btn, Toggles.Oreo, "Auto Oreo [Z]: ON ✔", "Auto Oreo [Z]: OFF") end)
+CreateButton(Col9, "Auto King [X]: OFF", UDim2.new(0, 0, 0, 100), function(btn) Toggles.King = not Toggles.King updateBtnVisual(btn, Toggles.King, "Auto King [X]: ON ✔", "Auto King [X]: OFF") end)
+CreateButton(Col9, "Auto Supa [C]: OFF", UDim2.new(0, 0, 0, 155), function(btn) Toggles.Supa = not Toggles.Supa updateBtnVisual(btn, Toggles.Supa, "Auto Supa [C]: ON ✔", "Auto Supa [C]: OFF") end)
+
+local CamLockBtn = CreateButton(Col10, "🎯 Плавный CamLock: OFF", UDim2.new(0, 0, 0, 45), function(btn) 
+    Toggles.CamLock = not Toggles.CamLock 
+    updateBtnVisual(btn, Toggles.CamLock, "🎯 Плавный CamLock: ON ✔", "🎯 Плавный CamLock: OFF") 
+end)
+
+local BindCamLockBtn = CreateButton(Col10, "🎹 Бинд CamLock: [ CapsLock ]", UDim2.new(0, 0, 0, 100), function(btn)
+    _G.IsBindingCamLock = true
+    btn.Text = "...Нажмите клавишу..."
+    btn.BackgroundColor3 = Color3.fromRGB(180, 100, 255)
+end)
+
+CreateButton(Col10, "🔒 Мобильный ShiftLock: OFF", UDim2.new(0, 0, 0, 155), function(btn) Toggles.MobileShift = not Toggles.MobileShift updateBtnVisual(btn, Toggles.MobileShift, "🔒 Мобильный ShiftLock: ON ✔", "🔒 Мобильный ShiftLock: OFF") LP.DevEnableMouseLock = Toggles.MobileShift end)
+
+local fovs = {70, 95, 120} local fovIdx = 1
+CreateButton(Col10, "👁 FOV: Стандартный", UDim2.new(0, 0, 0, 210), function(btn)
+    fovIdx = fovIdx + 1 if fovIdx > #fovs then fovIdx = 1 end
+    workspace.CurrentCamera.FieldOfView = fovs[fovIdx]
+    btn.Text = "👁 FOV: " .. (fovs[fovIdx] == 70 and "Стандартный" or fovs[fovIdx])
+    btn.BackgroundColor3 = fovs[fovIdx] > 70 and Color3.fromRGB(100, 30, 180) or Color3.fromRGB(22, 18, 30)
+end)
+
+_G.CamLockBtn, _G.BindCamLockBtn = CamLockBtn, BindCamLockBtn
+local UIS, Players, LP = game:GetService("UserInputService"), game:GetService("Players"), game:GetService("Players").LocalPlayer
+local Toggles, updateBtnVisual, simulateKey, clickMouse = _G.Toggles, _G.updateBtnVisual, _G.simulateKey, _G.clickMouse
+local CamLockBtn, BindCamLockBtn = _G.CamLockBtn, _G.BindCamLockBtn
+
+local function getClosestPlayer()
+    local closest, dist = nil, math.huge
+    for _, p in ipairs(Players:GetPlayers()) do
+        if p ~= LP and p.Character and p.Character:FindFirstChild("HumanoidRootPart") and LP.Character and LP.Character:FindFirstChild("HumanoidRootPart") then
+            local d = (p.Character.HumanoidRootPart.Position - LP.Character.HumanoidRootPart.Position).Magnitude
+            if d < dist and d < 150 then closest = p.Character.HumanoidRootPart dist = d end
+        end
+    end
+    return closest
+end
+
+game:GetService("RunService").RenderStepped:Connect(function()
+    if Toggles.CamLock then
+        local target = getClosestPlayer()
+        if target then workspace.CurrentCamera.CFrame = CFrame.new(workspace.CurrentCamera.CFrame.Position, target.Position) end
+    end
+end)
+
+UIS.InputBegan:Connect(function(input, gpe)
+    if _G.IsBindingCamLock then
+        if input.KeyCode ~= Enum.KeyCode.Unknown and input.KeyCode ~= Enum.KeyCode.K then
+            _G.CamLockKey = input.KeyCode
+            _G.IsBindingCamLock = false
+            BindCamLockBtn.Text = "🎹 Бинд CamLock: [ " .. input.KeyCode.Name .. " ]"
+            BindCamLockBtn.BackgroundColor3 = Color3.fromRGB(22, 18, 30)
+        end
+        return
+    end
+
+    if gpe then return end
+
+    if input.KeyCode == _G.CamLockKey then
+        Toggles.CamLock = not Toggles.CamLock
+        updateBtnVisual(CamLockBtn, Toggles.CamLock, "🎯 Плавный CamLock: ON ✔", "🎯 Плавный CamLock: OFF")
+    elseif input.KeyCode == Enum.KeyCode.T and Toggles.SideDash then
+        simulateKey(Enum.KeyCode.Q)
+        simulateKey(Enum.KeyCode.A)
+    elseif input.KeyCode == Enum.KeyCode.G and Toggles.DownSlam then
+        simulateKey(Enum.KeyCode.Space)
+        task.wait(0.18)
+        clickMouse()
+    elseif input.KeyCode == Enum.KeyCode.V and Toggles.Ragdoll then
+        for i = 1, 3 do
+            simulateKey(Enum.KeyCode.Space)
+            task.wait(0.05)
+        end
+    elseif input.KeyCode == Enum.KeyCode.Z and Toggles.Oreo then
+        clickMouse() task.wait(0.1) simulateKey(Enum.KeyCode.Q) task.wait(0.1) simulateKey(Enum.KeyCode.One)
+    elseif input.KeyCode == Enum.KeyCode.X and Toggles.King then
+        for i = 1, 3 do clickMouse() task.wait(0.2) end simulateKey(Enum.KeyCode.Two)
+    elseif input.KeyCode == Enum.KeyCode.C and Toggles.Supa then
+        simulateKey(Enum.KeyCode.Q) task.wait(0.05) simulateKey(Enum.KeyCode.Three)
+    end
+end)
+
+workspace.DescendantAdded:Connect(function(desc)
+    if Toggles.AutoClear and (desc:IsA("ParticleEmitter") or desc:IsA("Smoke") or desc:IsA("Sparkles")) then
+        task.wait(0.05) pcall(function() if desc and desc.Parent then desc:Destroy() end end)
+    end
+    if Toggles.AutoTrails and (desc:IsA("Beam") or desc:IsA("Trail")) then pcall(function() desc.Enabled = false end) end
+end)
+
+Players.PlayerAdded:Connect(function(p)
+    p.CharacterAdded:Connect(function(char)
+        if Toggles.EspToggle then task.wait(0.5) local h = Instance.new("Highlight", char) h.FillColor = Color3.fromRGB(150, 0, 255) end
+    end)
+end)
+
+local MobileToggleButton = Instance.new("TextButton")
+MobileToggleButton.Name = "MobileToggle" 
+local uiS = Instance.new("UIStroke", MobileToggleButton) 
+uiS.Thickness = 1.5 
+uiS.Color = Color3.fromRGB(138, 43, 226)
+MobileToggleButton.Parent = _G.ScreenGui 
+MobileToggleButton.Position = UDim2.new(0.02, 0, 0.15, 0) 
+MobileToggleButton.Size = UDim2.new(0, 45, 0, 45) 
+MobileToggleButton.BackgroundColor3 = Color3.fromRGB(12, 12, 14) 
+MobileToggleButton.Text = "⚙️" 
+MobileToggleButton.TextSize = 20 
+MobileToggleButton.TextColor3 = Color3.fromRGB(180, 100, 255) 
+_G.round(MobileToggleButton, 22) 
+MobileToggleButton.MouseButton1Click:Connect(_G.ToggleGui)
+
+_G.tabs["col1"].Btn.BackgroundColor3 = Color3.fromRGB(100, 30, 180) 
+_G.tabs["col1"].Btn.TextColor3 = Color3.fromRGB(255, 255, 255) 
+_G.tabs["col1"].Page.Visible = true
