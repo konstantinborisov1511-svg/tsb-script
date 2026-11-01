@@ -4,7 +4,7 @@ if old then old:Destroy() end
 local UIS, TS, Players = game:GetService("UserInputService"), game:GetService("TweenService"), game:GetService("Players")
 local LP, VIM = Players.LocalPlayer, game:GetService("VirtualInputManager")
 
-_G.Toggles = {SideDash=false, DownSlam=false, Ragdoll=false, Oreo=false, King=false, Supa=false, AutoClear=false, AutoTrails=false, LowRender=false, CustomFog=false, CamLock=false, MobileShift=false, EspToggle=false, Disable3D=false, ExtremeFPS=false}
+_G.Toggles = {SideDash=false, DownSlam=false, Ragdoll=false, Oreo=false, King=false, Supa=false, AutoClear=false, AutoTrails=false, LowRender=false, CustomFog=false, CamLock=false, MobileShift=false, EspToggle=false, Disable3D=false, ExtremeFPS=false, SoftTextures=false}
 _G.CamKey, _G.IsBind, guiEx = Enum.KeyCode.CapsLock, false, true
 
 _G.press = function(keyCode)
@@ -23,6 +23,9 @@ _G.tapM1 = function()
         VIM:SendMouseButtonEvent(vp.X/2, vp.Y/2, 0, false, game, 1)
     end)
 end
+local UIS, TS, Players = game:GetService("UserInputService"), game:GetService("TweenService"), game:GetService("Players")
+local LP = Players.LocalPlayer
+
 local SG = Instance.new("ScreenGui") SG.Name = "TSB_Advanced_Booster" SG.ResetOnSpawn = false
 pcall(function() SG.Parent = game:GetService("CoreGui") end) if not SG.Parent then SG.Parent = LP:WaitForChild("PlayerGui") end
 
@@ -64,6 +67,8 @@ UIS.InputChanged:Connect(function(i) if i == di and drg then local d = i.Positio
 
 _G.TglGui = function() guiEx = not guiEx; MF.Visible = guiEx end
 UIS.InputBegan:Connect(function(i, g) if not g and i.KeyCode == Enum.KeyCode.K then _G.TglGui() end end)
+local Toggles = _G.Toggles
+local Nav, CF, rnd, SG, MF = _G.Nav, _G.CF, _G.rnd, _G.SG, _G.MF
 
 _G.CTab = function(n, id)
     local P = Instance.new("Frame") P.Name = id.."Page" P.Parent = CF; P.BackgroundTransparency = 1; P.Size = UDim2.new(1, 0, 1, 0) P.Visible = false
@@ -81,16 +86,45 @@ end
 
 _G.CBtn = function(p, t, pos, cb) local B = Instance.new("TextButton") B.Parent = p; B.BackgroundColor3 = Color3.fromRGB(22,18,30) B.Position = pos; B.Size = UDim2.new(0, 230, 0, 45) B.Font = Enum.Font.SourceSansBold; B.Text = t; B.TextColor3 = Color3.fromRGB(230,220,255) B.TextSize = 13; rnd(B, 6) local s = Instance.new("UIStroke") s.Thickness = 1; s.Color = Color3.fromRGB(80,40,120) s.Parent = B; B.MouseButton1Click:Connect(function() cb(B) end) return B end
 _G.upBtn = function(b, s, on, off) b.BackgroundColor3 = s and Color3.fromRGB(100,30,180) or Color3.fromRGB(22,18,30) b.Text = s and on or off end
-local Toggles, CTab, CBtn, upBtn = _G.Toggles, _G.CTab, _G.CBtn, _G.upBtn
+
+local CTab, CBtn, upBtn = _G.CTab, _G.CBtn, _G.upBtn
 local c1, c2, c3, c4, c5, c6, c7 = CTab("1. ХАРДКОР ОПТИМИЗАЦИЯ","col1"), CTab("2. Ультра Графика","col2"), CTab("3. Очистка Мусора","col3"), CTab("4. Атмосфера","col4"), CTab("5. Шлейфы","col5"), CTab("6. Движок","col6"), CTab("7. Базовые Течи","col7")
 
+local function applySoftTextures(v)
+    if v:IsA("BasePart") and not v:IsA("MeshPart") then
+        v.Material = Enum.Material.SmoothPlastic
+    elseif v:IsA("MeshPart") then
+        v.Material = Enum.Material.SmoothPlastic
+        v.TextureID = ""
+    elseif v:IsA("Texture") or v:IsA("Decal") then
+        v:Destroy()
+    end
+end
+
 CBtn(c1, "🔥 Экстремальный Буст FPS x3", UDim2.new(0,0,0,45), function(b) Toggles.ExtremeFPS = not Toggles.ExtremeFPS; upBtn(b, Toggles.ExtremeFPS, "🔥 Буст x3: АКТИВИРОВАН ✔", "🔥 Экстремальный Буст FPS x3") task.spawn(function() while Toggles.ExtremeFPS do pcall(function() gcinfo() settings().Rendering.QualityLevel = Enum.QualityLevel.Level01 end) task.wait(1) end end) end)
-CBtn(c1, "💀 Вырезать Освещение и Небо", UDim2.new(0,0,0,100), function(b) pcall(function() game:GetService("Lighting").GlobalShadows = false; game:GetService("Lighting").EnvironmentSpecularScale = 0; game:GetService("Lighting").EnvironmentDiffuseScale = 0; local s = game:GetService("Lighting"):FindFirstChildOfClass("Sky") if s then s:Destroy() end; b.BackgroundColor3 = Color3.fromRGB(100,30,180) b.Text = "Небо и Свет Удалены! ✔" end) end)
-CBtn(c1, "🚫 Отключить 3D Рендер (AFK)", UDim2.new(0,0,0,155), function(b) Toggles.Disable3D = not Toggles.Disable3D; upBtn(b, Toggles.Disable3D, "🚫 3D Рендер: ВЫКЛЮЧЕН ✔", "🚫 Отключить 3D Рендер (AFK)") game:GetService("RunService"):Set3DRenderingEnabled(not Toggles.Disable3D) end)
+CBtn(c1, "🧸 Soft Текстуры 200%", UDim2.new(0,0,0,100), function(b) Toggles.SoftTextures = not Toggles.SoftTextures; upBtn(b, Toggles.SoftTextures, "🧸 Soft Сжатие 200%: ON ✔", "🧸 Soft Текстуры 200%") if Toggles.SoftTextures then task.spawn(function() for _, v in ipairs(workspace:GetDescendants()) do if not Toggles.SoftTextures then break end pcall(applySoftTextures, v) end end) end end)
+CBtn(c1, "💀 Вырезать Освещение и Небо", UDim2.new(0,0,0,155), function(b) pcall(function() game:GetService("Lighting").GlobalShadows = false; game:GetService("Lighting").EnvironmentSpecularScale = 0; game:GetService("Lighting").EnvironmentDiffuseScale = 0; local s = game:GetService("Lighting"):FindFirstChildOfClass("Sky") if s then s:Destroy() end; b.BackgroundColor3 = Color3.fromRGB(100,30,180) b.Text = "Небо и Свет Удалены! ✔" end) end)
+CBtn(c1, "🚫 Отключить 3D Рендер (AFK)", UDim2.new(0,0,0,210), function(b) Toggles.Disable3D = not Toggles.Disable3D; upBtn(b, Toggles.Disable3D, "🚫 3D Рендер: ВЫКЛЮЧЕН ✔", "🚫 Отключить 3D Рендер (AFK)") game:GetService("RunService"):Set3DRenderingEnabled(not Toggles.Disable3D) end)
 CBtn(c2, "👑 Максимальная Графика RT", UDim2.new(0,0,0,45), function(b) task.spawn(function() settings().Rendering.QualityLevel = Enum.QualityLevel.Level21; game:GetService("Lighting").GlobalShadows = true; for _, e in pairs(game:GetService("Lighting"):GetChildren()) do if e:IsA("PostEffect") or e:IsA("BloomEffect") or e:IsA("BlurEffect") or e:IsA("SunRaysEffect") then e.Enabled = true end end; local t = workspace:FindFirstChildOfClass("Terrain") if t then t.WaterWaveSize = 1; t.WaterWaveSpeed = 1; t.Decoration = true end; b.BackgroundColor3 = Color3.fromRGB(100,30,180) b.Text = "Графика: Кинематографичная! 👑" end) end)
 CBtn(c2, "🚀 Разблокировать FPS (999)", UDim2.new(0,0,0,100), function(b) if setfpscap then setfpscap(999) b.BackgroundColor3 = Color3.fromRGB(100,30,180) b.Text = "FPS Кап снят! ✔" else b.Text = "Не поддерживается читом ❌" end end)
 CBtn(c3, "Пост-Очистка Мусора: OFF", UDim2.new(0,0,0,45), function(b) Toggles.AutoClear = not Toggles.AutoClear; upBtn(b, Toggles.AutoClear, "Пост-Очистка Мусора: ON ✔", "Пост-Очистка Мусора: OFF") if Toggles.AutoClear then task.spawn(function() for _, v in ipairs(workspace:GetDescendants()) do if v:IsA("ParticleEmitter") or v:IsA("Trail") or v:IsA("Smoke") or v:IsA("Sparkles") then pcall(function() v:Destroy() end) end end end) end end)
 CBtn(c4, "🔮 Фиолетовый Туман", UDim2.new(0,0,0,45), function(b) Toggles.CustomFog = not Toggles.CustomFog; upBtn(b, Toggles.CustomFog, "🔮 Туман: ON ✔", "🔮 Фиолетовый Туман") if Toggles.CustomFog then game:GetService("Lighting").FogStart = 30; game:GetService("Lighting").FogEnd = 120; game:GetService("Lighting").FogColor = Color3.fromRGB(12,12,14) else game:GetService("Lighting").FogStart = 0; game:GetService("Lighting").FogEnd = 999999 end end)
+local UIS, Players = game:GetService("UserInputService"), game:GetService("Players")
+local LP = Players.LocalPlayer
+local Toggles, CTab, CBtn, upBtn = _G.Toggles, _G.CTab, _G.CBtn, _G.upBtn
+local rnd = _G.rnd
+local c5, c6, c7 = _G.tabs["col5"].P, _G.tabs["col6"].P, _G.tabs["col7"].P
+
+local function applySoftTextures(v)
+    if v:IsA("BasePart") and not v:IsA("MeshPart") then
+        v.Material = Enum.Material.SmoothPlastic
+    elseif v:IsA("MeshPart") then
+        v.Material = Enum.Material.SmoothPlastic
+        v.TextureID = ""
+    elseif v:IsA("Texture") or v:IsA("Decal") then
+        v:Destroy()
+    end
+end
 
 local hidT = {}
 CBtn(c5, "✨ Вырезать Шлейфы", UDim2.new(0,0,0,45), function(b) Toggles.AutoTrails = not Toggles.AutoTrails; upBtn(b, Toggles.AutoTrails, "✨ Шлейфы: ВЫРЕЗАНЫ ✔", "✨ Вырезать Шлейфы") if Toggles.AutoTrails then for _, v in pairs(workspace:GetDescendants()) do if v:IsA("Beam") or v:IsA("Trail") then if v.Enabled then table.insert(hidT, v) v.Enabled = false end end end else for _, v in pairs(hidT) do if v and v.Parent then v.Enabled = true end end; table.clear(hidT) end end)
@@ -102,6 +136,7 @@ local BCLB = CBtn(c7, "🎹 Бинд CamLock: [ CapsLock ]", UDim2.new(0,0,0,100
 CBtn(c7, "Side Dash [T]: OFF", UDim2.new(0,0,0,155), function(b) Toggles.SideDash = not Toggles.SideDash; upBtn(b, Toggles.SideDash, "Side Dash [T]: ON ✔", "Side Dash [T]: OFF") end)
 CBtn(c7, "Down Slam [G]: OFF", UDim2.new(0,0,0,210), function(b) Toggles.DownSlam = not Toggles.DownSlam; upBtn(b, Toggles.DownSlam, "Down Slam [G]: ON ✔", "Down Slam [G]: OFF") end)
 CBtn(c7, "Ragdoll Cancel [V]: OFF", UDim2.new(0,0,0,265), function(b) Toggles.Ragdoll = not Toggles.Ragdoll; upBtn(b, Toggles.Ragdoll, "Ragdoll Cancel [V]: ON ✔", "Ragdoll Cancel [V]: OFF") end)
+
 local function getCls()
     local c, d = nil, math.huge
     for _, p in ipairs(Players:GetPlayers()) do 
@@ -143,10 +178,15 @@ UIS.InputBegan:Connect(function(i, g)
     end 
 end)
 
-workspace.DescendantAdded:Connect(function(d) if Toggles.AutoClear and (d:IsA("ParticleEmitter") or d:IsA("Smoke") or d:IsA("Sparkles")) then task.wait(0.05) pcall(function() if d and d.Parent then d:Destroy() end end) end; if Toggles.AutoTrails and (d:IsA("Beam") or d:IsA("Trail")) then pcall(function() d.Enabled = false end) end end)
+workspace.DescendantAdded:Connect(function(d) 
+    if Toggles.SoftTextures then pcall(applySoftTextures, d) end
+    if Toggles.AutoClear and (d:IsA("ParticleEmitter") or d:IsA("Smoke") or d:IsA("Sparkles")) then task.wait(0.05) pcall(function() if d and d.Parent then d:Destroy() end end) end; 
+    if Toggles.AutoTrails and (d:IsA("Beam") or d:IsA("Trail")) then pcall(function() d.Enabled = false end) end 
+end)
+
 Players.PlayerAdded:Connect(function(p) p.CharacterAdded:Connect(function(c) if Toggles.EspToggle then task.wait(0.5) local h = Instance.new("Highlight", c) h.FillColor = Color3.fromRGB(150,0,255) end end) end)
 
-local SG = game:GetService("CoreGui"):FindFirstChild("TSB_Advanced_Booster") or LP:WaitForChild("PlayerGui"):FindFirstChild("TSB_Advanced_Booster")
-local MTB = Instance.new("TextButton") MTB.Name = "MobileToggle" local uS = Instance.new("UIStroke", MTB) uS.Thickness = 1.5; uS.Color = Color3.fromRGB(138,43,226) MTB.Parent = SG; MTB.Position = UDim2.new(0.02, 0, 0.15, 0) MTB.Size = UDim2.new(0, 45, 0, 45) MTB.BackgroundColor3 = Color3.fromRGB(12,12,14) MTB.Text = "⚙️" MTB.TextSize = 20; MTB.TextColor3 = Color3.fromRGB(180,100,255) rnd(MTB, 22) MTB.MouseButton1Click:Connect(_G.TglGui)
+local SG2 = game:GetService("CoreGui"):FindFirstChild("TSB_Advanced_Booster") or LP:WaitForChild("PlayerGui"):FindFirstChild("TSB_Advanced_Booster")
+local MTB = Instance.new("TextButton") MTB.Name = "MobileToggle" local uS = Instance.new("UIStroke", MTB) uS.Thickness = 1.5; uS.Color = Color3.fromRGB(138,43,226) MTB.Parent = SG2; MTB.Position = UDim2.new(0.02, 0, 0.15, 0) MTB.Size = UDim2.new(0, 45, 0, 45) MTB.BackgroundColor3 = Color3.fromRGB(12,12,14) MTB.Text = "⚙️" MTB.TextSize = 20; MTB.TextColor3 = Color3.fromRGB(180,100,255) rnd(MTB, 22) MTB.MouseButton1Click:Connect(_G.TglGui)
 
 _G.tabs["col1"].B.BackgroundColor3 = Color3.fromRGB(100,30,180) _G.tabs["col1"].B.TextColor3 = Color3.fromRGB(255,255,255) _G.tabs["col1"].P.Visible = true
