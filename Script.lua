@@ -2,10 +2,57 @@ local old = game:GetService("CoreGui"):FindFirstChild("TSB_Advanced_Booster") or
 if old then old:Destroy() end
 
 local VIM = game:GetService("VirtualInputManager")
+local HttpService = game:GetService("HttpService")
+local FILE_NAME = "ameba_optimizer_saves.json"
 
-_G.Toggles = {SideDash=false, DownSlam=false, Ragdoll=false, Oreo=false, King=false, Supa=false, AutoClear=false, AutoTrails=false, LowRender=false, CustomFog=false, CamLock=false, MobileShift=false, EspToggle=false, Disable3D=false, ExtremeFPS=false, SoftTextures=false}
+_G.Toggles = {
+    SideDash=false, DownSlam=false, Ragdoll=false, Oreo=false, King=false, Supa=false, 
+    AutoClear=false, AutoTrails=false, LowRender=false, CustomFog=false, CamLock=false, 
+    MobileShift=false, EspToggle=false, Disable3D=false, ExtremeFPS=false, SoftTextures=false
+}
 _G.CamKey, _G.IsBind, guiEx = Enum.KeyCode.CapsLock, false, true
 
+-- ФУНКЦИИ СОХРАНЕНИЯ И ЗАГРУЗКИ --
+local function saveSettings()
+    pcall(function()
+        local data = {
+            Toggles = _G.Toggles,
+            CamKey = _G.CamKey.Value
+        }
+        if writefile then
+            writefile(FILE_NAME, HttpService:JSONEncode(data))
+        end
+    end)
+end
+_G.saveSettings = saveSettings -- Экспортируем в глобальную область для других блоков
+
+local function loadSettings()
+    pcall(function()
+        -- Добавлена критическая проверка isfile, чтобы предотвратить вылет, если файла еще нет
+        if readfile and isfile and isfile(FILE_NAME) then
+            local rawData = readfile(FILE_NAME)
+            local data = HttpService:JSONDecode(rawData)
+            if data then
+                if data.Toggles then
+                    for k, v in pairs(data.Toggles) do
+                        _G.Toggles[k] = v
+                    end
+                end
+                if data.CamKey then
+                    for _, key in ipairs(Enum.KeyCode:GetEnumItems()) do
+                        if key.Value == data.CamKey then
+                            _G.CamKey = key
+                            break
+                        end
+                    end
+                end
+            end
+        end
+    end)
+end
+
+-- Загружаем настройки перед созданием GUI
+loadSettings()
 _G.press = function(keyCode)
     pcall(function()
         VIM:SendKeyEvent(true, keyCode, false, game)
@@ -23,8 +70,29 @@ _G.tapM1 = function()
     end)
 end
 
-_G.CBtn = function(p, t, pos, cb) local B = Instance.new("TextButton") B.Parent = p; B.BackgroundColor3 = Color3.fromRGB(22,18,30) B.Position = pos; B.Size = UDim2.new(0, 230, 0, 45) B.Font = Enum.Font.SourceSansBold; B.Text = t; B.TextColor3 = Color3.fromRGB(230,220,255) B.TextSize = 13; _G.rnd(B, 6) local s = Instance.new("UIStroke") s.Thickness = 1; s.Color = Color3.fromRGB(80,40,120) s.Parent = B; B.MouseButton1Click:Connect(function() cb(B) end) return B end
-_G.upBtn = function(b, s, on, off) b.BackgroundColor3 = s and Color3.fromRGB(100,30,180) or Color3.fromRGB(22,18,30) b.Text = s and on or off end
+_G.CBtn = function(p, t, pos, cb) 
+    local B = Instance.new("TextButton") 
+    B.Parent = p; 
+    B.BackgroundColor3 = Color3.fromRGB(22,18,30) 
+    B.Position = pos; 
+    B.Size = UDim2.new(0, 230, 0, 45) 
+    B.Font = Enum.Font.SourceSansBold; 
+    B.Text = t; 
+    B.TextColor3 = Color3.fromRGB(230,220,255) 
+    B.TextSize = 13; 
+    _G.rnd(B, 6) 
+    local s = Instance.new("UIStroke") 
+    s.Thickness = 1; 
+    s.Color = Color3.fromRGB(80,40,120) 
+    s.Parent = B; 
+    B.MouseButton1Click:Connect(function() cb(B) end) 
+    return B 
+end
+
+_G.upBtn = function(b, s, on, off) 
+    b.BackgroundColor3 = s and Color3.fromRGB(100,30,180) or Color3.fromRGB(22,18,30) 
+    b.Text = s and on or off 
+end
 local UIS = game:GetService("UserInputService")
 local TS = game:GetService("TweenService")
 local LP = game:GetService("Players").LocalPlayer
@@ -35,13 +103,14 @@ pcall(function() SG.Parent = game:GetService("CoreGui") end) if not SG.Parent th
 local MF = Instance.new("Frame") MF.Name = "MainFrame" MF.Parent = SG; MF.BackgroundColor3 = Color3.fromRGB(12,12,14) MF.BorderColor3 = Color3.fromRGB(138,43,226) MF.BorderSizePixel = 1; MF.Position = UDim2.new(0.05, 0, 0.25, 0) MF.Size = UDim2.new(0, 680, 0, 420) MF.Active = true; MF.ClipsDescendants = true; MF.Visible = false
 
 local function rnd(o, r) local c = Instance.new("UICorner") c.CornerRadius = UDim.new(0, r) c.Parent = o end
+_G.rnd = rnd
 rnd(MF, 10)
 
 local Nav = Instance.new("ScrollingFrame") Nav.Name = "Navigation" Nav.Parent = MF; Nav.BackgroundColor3 = Color3.fromRGB(18,18,22) Nav.Position = UDim2.new(0, 5, 0, 40) Nav.Size = UDim2.new(0, 180, 0, 350) Nav.CanvasSize = UDim2.new(0, 0, 0, 460) Nav.ScrollBarThickness = 3; Nav.BorderSizePixel = 0; rnd(Nav, 6)
 local NL = Instance.new("UIListLayout") NL.Parent = Nav; NL.Padding = UDim.new(0, 4) NL.HorizontalAlignment = Enum.HorizontalAlignment.Center
 
 local CF = Instance.new("Frame") CF.Name = "ContentFrame" CF.Parent = MF; CF.BackgroundTransparency = 1; CF.Position = UDim2.new(0, 195, 0, 40) CF.Size = UDim2.new(0, 475, 0, 350)
-_G.tabs, _G.Nav, _G.CF, _G.rnd, _G.SG, _G.MF = {}, Nav, CF, rnd, SG, MF
+_G.tabs, _G.Nav, _G.CF, _G.SG, _G.MF = {}, Nav, CF, SG, MF
 
 local function CTab(n, id)
     local P = Instance.new("Frame") P.Name = id.."Page" P.Parent = CF; P.BackgroundTransparency = 1; P.Size = UDim2.new(1, 0, 1, 0) P.Visible = false
@@ -94,7 +163,6 @@ local c1 = _G.tabs["col1"].P
 local c2 = _G.tabs["col2"].P
 local c3 = _G.tabs["col3"].P
 local c4 = _G.tabs["col4"].P
-
 local function applySoftTextures(v)
     if v:IsA("BasePart") and not v:IsA("MeshPart") then
         v.Material = Enum.Material.SmoothPlastic
@@ -107,33 +175,88 @@ local function applySoftTextures(v)
 end
 _G.applySoftTextures = applySoftTextures
 
-CBtn(c1, "🔥 Экстремальный Буст FPS x3", UDim2.new(0,0,0,45), function(b) Toggles.ExtremeFPS = not Toggles.ExtremeFPS; upBtn(b, Toggles.ExtremeFPS, "🔥 Буст x3: АКТИВИРОВАН ✔", "🔥 Экстремальный Буст FPS x3") task.spawn(function() while Toggles.ExtremeFPS do pcall(function() gcinfo() settings().Rendering.QualityLevel = Enum.QualityLevel.Level01 end) task.wait(1) end end) end)
-CBtn(c1, "🧸 Soft Текстуры 200%", UDim2.new(0,0,0,100), function(b) Toggles.SoftTextures = not Toggles.SoftTextures; upBtn(b, Toggles.SoftTextures, "🧸 Soft Сжатие 200%: ON ✔", "🧸 Soft Текстуры 200%") if Toggles.SoftTextures then task.spawn(function() for _, v in ipairs(workspace:GetDescendants()) do if not Toggles.SoftTextures then break end pcall(applySoftTextures, v) end end) end end)
+-- ПРИМЕНЕНИЕ СОХРАНЕННЫХ ТРИГГЕРОВ ПРИ ЗАПУСКЕ
+if Toggles.ExtremeFPS then
+    task.spawn(function() while Toggles.ExtremeFPS do pcall(function() gcinfo() settings().Rendering.QualityLevel = Enum.QualityLevel.Level01 end) task.wait(1) end end)
+end
+if Toggles.SoftTextures then
+    task.spawn(function() for _, v in ipairs(workspace:GetDescendants()) do if not Toggles.SoftTextures then break end pcall(applySoftTextures, v) end end)
+end
+if Toggles.Disable3D then
+    game:GetService("RunService"):Set3DRenderingEnabled(not Toggles.Disable3D)
+end
+if Toggles.CustomFog then
+    game:GetService("Lighting").FogStart = 30; game:GetService("Lighting").FogEnd = 120; game:GetService("Lighting").FogColor = Color3.fromRGB(12,12,14)
+end
+
+-- НАСТРОЙКА КНОПОК
+local b1 = CBtn(c1, "🔥 Экстремальный Буст FPS x3", UDim2.new(0,0,0,45), function(b) 
+    Toggles.ExtremeFPS = not Toggles.ExtremeFPS; _G.saveSettings()
+    upBtn(b, Toggles.ExtremeFPS, "🔥 Буст x3: АКТИВИРОВАН ✔", "🔥 Экстремальный Буст FPS x3") 
+    task.spawn(function() while Toggles.ExtremeFPS do pcall(function() gcinfo() settings().Rendering.QualityLevel = Enum.QualityLevel.Level01 end) task.wait(1) end end) 
+end) upBtn(b1, Toggles.ExtremeFPS, "🔥 Буст x3: АКТИВИРОВАН ✔", "🔥 Экстремальный Буст FPS x3")
+
+local b2 = CBtn(c1, "🧸 Soft Текстуры 200%", UDim2.new(0,0,0,100), function(b) 
+    Toggles.SoftTextures = not Toggles.SoftTextures; _G.saveSettings()
+    upBtn(b, Toggles.SoftTextures, "🧸 Soft Сжатие 200%: ON ✔", "🧸 Soft Текстуры 200%") 
+    if Toggles.SoftTextures then task.spawn(function() for _, v in ipairs(workspace:GetDescendants()) do if not Toggles.SoftTextures then break end pcall(applySoftTextures, v) end end) end 
+end) upBtn(b2, Toggles.SoftTextures, "🧸 Soft Сжатие 200%: ON ✔", "🧸 Soft Текстуры 200%")
+
 CBtn(c1, "💀 Вырезать Освещение и Небо", UDim2.new(0,0,0,155), function(b) pcall(function() game:GetService("Lighting").GlobalShadows = false; game:GetService("Lighting").EnvironmentSpecularScale = 0; game:GetService("Lighting").EnvironmentDiffuseScale = 0; local s = game:GetService("Lighting"):FindFirstChildOfClass("Sky") if s then s:Destroy() end; b.BackgroundColor3 = Color3.fromRGB(100,30,180) b.Text = "Небо и Свет Удалены! ✔" end) end)
-CBtn(c1, "🚫 Отключить 3D Рендер (AFK)", UDim2.new(0,0,0,210), function(b) Toggles.Disable3D = not Toggles.Disable3D; upBtn(b, Toggles.Disable3D, "🚫 3D Рендер: ВЫКЛЮЧЕН ✔", "🚫 Отключить 3D Рендер (AFK)") game:GetService("RunService"):Set3DRenderingEnabled(not Toggles.Disable3D) end)
+
+local b3 = CBtn(c1, "🚫 Отключить 3D Рендер (AFK)", UDim2.new(0,0,0,210), function(b) 
+    Toggles.Disable3D = not Toggles.Disable3D; _G.saveSettings()
+    upBtn(b, Toggles.Disable3D, "🚫 3D Рендер: ВЫКЛЮЧЕН ✔", "🚫 Отключить 3D Рендер (AFK)") 
+    game:GetService("RunService"):Set3DRenderingEnabled(not Toggles.Disable3D) 
+end) upBtn(b3, Toggles.Disable3D, "🚫 3D Рендер: ВЫКЛЮЧЕН ✔", "🚫 Отключить 3D Рендер (AFK)")
+
 CBtn(c2, "👑 Максимальная Графика RT", UDim2.new(0,0,0,45), function(b) task.spawn(function() settings().Rendering.QualityLevel = Enum.QualityLevel.Level21; game:GetService("Lighting").GlobalShadows = true; for _, e in pairs(game:GetService("Lighting"):GetChildren()) do if e:IsA("PostEffect") or e:IsA("BloomEffect") or e:IsA("BlurEffect") or e:IsA("SunRaysEffect") then e.Enabled = true end end; local t = workspace:FindFirstChildOfClass("Terrain") if t then t.WaterWaveSize = 1; t.WaterWaveSpeed = 1; t.Decoration = true end; b.BackgroundColor3 = Color3.fromRGB(100,30,180) b.Text = "Графика: Кинематографичная! 👑" end) end)
 CBtn(c2, "🚀 Разблокировать FPS (15)", UDim2.new(0,0,0,100), function(b) if setfpscap then setfpscap(15) b.BackgroundColor3 = Color3.fromRGB(100,30,180) b.Text = "FPS Кап снят! ✔" else b.Text = "Не поддерживается читом ❌" end end)
-CBtn(c3, "Пост-Очистка Мусора: OFF", UDim2.new(0,0,0,45), function(b) Toggles.AutoClear = not Toggles.AutoClear; upBtn(b, Toggles.AutoClear, "Пост-Очистка Мусора: ON ✔", "Пост-Очистка Мусора: OFF") if Toggles.AutoClear then task.spawn(function() for _, v in ipairs(workspace:GetDescendants()) do if v:IsA("ParticleEmitter") or v:IsA("Trail") or v:IsA("Smoke") or v:IsA("Sparkles") then pcall(function() v:Destroy() end) end end end) end end)
-CBtn(c4, "🔮 Фиолетовый Туман", UDim2.new(0,0,0,45), function(b) Toggles.CustomFog = not Toggles.CustomFog; upBtn(b, Toggles.CustomFog, "🔮 Туман: ON ✔", "🔮 Фиолетовый Туман") if Toggles.CustomFog then game:GetService("Lighting").FogStart = 30; game:GetService("Lighting").FogEnd = 120; game:GetService("Lighting").FogColor = Color3.fromRGB(12,12,14) else game:GetService("Lighting").FogStart = 0; game:GetService("Lighting").FogEnd = 999999 end end)
-local UIS = game:GetService("UserInputService")
+
+local b4 = CBtn(c3, "Пост-Очистка Мусора: OFF", UDim2.new(0,0,0,45), function(b) 
+    Toggles.AutoClear = not Toggles.AutoClear; _G.saveSettings()
+    upBtn(b, Toggles.AutoClear, "Пост-Очистка Мусора: ON ✔", "Пост-Очистка Мусора: OFF") 
+    if Toggles.AutoClear then task.spawn(function() for _, v in ipairs(workspace:GetDescendants()) do if v:IsA("ParticleEmitter") or v:IsA("Trail") or v:IsA("Smoke") or v:IsA("Sparkles") then pcall(function() v:Destroy() end) end end end) end 
+end) upBtn(b4, Toggles.AutoClear, "Пост-Очистка Мусора: ON ✔", "Пост-Очистка Мусора: OFF")
+
+local b5 = CBtn(c4, "🔮 Фиолетовый Туман", UDim2.new(0,0,0,45), function(b) 
+    Toggles.CustomFog = not Toggles.CustomFog; _G.saveSettings()
+    upBtn(b, Toggles.CustomFog, "🔮 Туман: ON ✔", "🔮 Фиолетовый Туман") 
+    if Toggles.CustomFog then game:GetService("Lighting").FogStart = 30; game:GetService("Lighting").FogEnd = 120; game:GetService("Lighting").FogColor = Color3.fromRGB(12,12,14) else game:GetService("Lighting").FogStart = 0; game:GetService("Lighting").FogEnd = 999999 end 
+end) upBtn(b5, Toggles.CustomFog, "🔮 Туман: ON ✔", "🔮 Фиолетовый Туман")
 local Players = game:GetService("Players")
 local LP = Players.LocalPlayer
-local Toggles, CBtn, upBtn = _G.Toggles, _G.CBtn, _G.upBtn
 
 local c5 = _G.tabs["col5"].P
 local c6 = _G.tabs["col6"].P
 local c7 = _G.tabs["col7"].P
 
 local hidT = {}
-CBtn(c5, "✨ Вырезать Шлейфы", UDim2.new(0,0,0,45), function(b) Toggles.AutoTrails = not Toggles.AutoTrails; upBtn(b, Toggles.AutoTrails, "✨ Шлейфы: ВЫРЕЗАНЫ ✔", "✨ Вырезать Шлейфы") if Toggles.AutoTrails then for _, v in pairs(workspace:GetDescendants()) do if v:IsA("Beam") or v:IsA("Trail") then if v.Enabled then table.insert(hidT, v) v.Enabled = false end end end else for _, v in pairs(hidT) do if v and v.Parent then v.Enabled = true end end; table.clear(hidT) end end)
-CBtn(c6, "⚙️ Движок на Предпочтение", UDim2.new(0,0,0,45), function(b) Toggles.LowRender = not Toggles.LowRender; upBtn(b, Toggles.LowRender, "⚙️ Лоу-Режим: АКТИВЕН ✔", "⚙️ Движок на Минимум") settings().Rendering.QualityLevel = Toggles.LowRender and Enum.QualityLevel.Level01 or Enum.QualityLevel.Automatic end)
+local b6 = CBtn(c5, "✨ Вырезать Шлейфы", UDim2.new(0,0,0,45), function(b) 
+    Toggles.AutoTrails = not Toggles.AutoTrails; _G.saveSettings()
+    upBtn(b, Toggles.AutoTrails, "✨ Шлейфы: ВЫРЕЗАНЫ ✔", "✨ Вырезать Шлейфы") 
+    if Toggles.AutoTrails then for _, v in pairs(workspace:GetDescendants()) do if v:IsA("Beam") or v:IsA("Trail") then if v.Enabled then table.insert(hidT, v) v.Enabled = false end end end else for _, v in pairs(hidT) do if v and v.Parent then v.Enabled = true end end; table.clear(hidT) end 
+end) upBtn(b6, Toggles.AutoTrails, "✨ Шлейфы: ВЫРЕЗАНЫ ✔", "✨ Вырезать Шлейфы")
 
-local CLB = CBtn(c7, "🎯 Плавный CamLock: OFF", UDim2.new(0,0,0,45), function(b) Toggles.CamLock = not Toggles.CamLock; upBtn(b, Toggles.CamLock, "🎯 Плавный CamLock: ON ✔", "🎯 Плавный CamLock: OFF") end)
-local BCLB = CBtn(c7, "🎹 Бинд CamLock: [ CapsLock ]", UDim2.new(0,0,0,100), function(b) _G.IsBind = true b.Text = "按下 нажми любую клавишу..." b.BackgroundColor3 = Color3.fromRGB(100,30,180) end)
+local b7 = CBtn(c6, "⚙️ Движок на Предпочтение", UDim2.new(0,0,0,45), function(b) 
+    Toggles.LowRender = not Toggles.LowRender; _G.saveSettings()
+    upBtn(b, Toggles.LowRender, "⚙️ Лоу-Режим: АКТИВЕН ✔", "⚙️ Движок на Минимум") 
+    settings().Rendering.QualityLevel = Toggles.LowRender and Enum.QualityLevel.Level01 or Enum.QualityLevel.Automatic 
+end) upBtn(b7, Toggles.LowRender, "⚙️ Лоу-Режим: АКТИВЕН ✔", "⚙️ Движок на Минимум")
 
-CBtn(c7, "Side Dash [T]: OFF", UDim2.new(0,0,0,155), function(b) Toggles.SideDash = not Toggles.SideDash; upBtn(b, Toggles.SideDash, "Side Dash [T]: ON ✔", "Side Dash [T]: OFF") end)
-CBtn(c7, "Down Slam [G]: OFF", UDim2.new(0,0,0,210), function(b) Toggles.DownSlam = not Toggles.DownSlam; upBtn(b, Toggles.DownSlam, "Down Slam [G]: ON ✔", "Down Slam [G]: OFF") end)
-CBtn(c7, "Ragdoll Cancel [V]: OFF", UDim2.new(0,0,0,265), function(b) Toggles.Ragdoll = not Toggles.Ragdoll; upBtn(b, Toggles.Ragdoll, "Ragdoll Cancel [V]: ON ✔", "Ragdoll Cancel [V]: OFF") end)
+local CLB = CBtn(c7, "🎯 Плавный CamLock: OFF", UDim2.new(0,0,0,45), function(b) Toggles.CamLock = not Toggles.CamLock; _G.saveSettings(); upBtn(b, Toggles.CamLock, "🎯 Плавный CamLock: ON ✔", "🎯 Плавный CamLock: OFF") end)
+upBtn(CLB, Toggles.CamLock, "🎯 Плавный CamLock: ON ✔", "🎯 Плавный CamLock: OFF")
+
+local BCLB = CBtn(c7, "🎹 Бинд CamLock: [ " .. _G.CamKey.Name .. " ]", UDim2.new(0,0,0,100), function(b) _G.IsBind = true b.Text = "Нажми любую клавишу..." b.BackgroundColor3 = Color3.fromRGB(100,30,180) end)
+
+local b8 = CBtn(c7, "Side Dash [T]: OFF", UDim2.new(0,0,0,155), function(b) Toggles.SideDash = not Toggles.SideDash; _G.saveSettings(); upBtn(b, Toggles.SideDash, "Side Dash [T]: ON ✔", "Side Dash [T]: OFF") end)
+upBtn(b8, Toggles.SideDash, "Side Dash [T]: ON ✔", "Side Dash [T]: OFF")
+
+local b9 = CBtn(c7, "Down Slam [G]: OFF", UDim2.new(0,0,0,210), function(b) Toggles.DownSlam = not Toggles.DownSlam; _G.saveSettings(); upBtn(b, Toggles.DownSlam, "Down Slam [G]: ON ✔", "Down Slam [G]: OFF") end)
+upBtn(b9, Toggles.DownSlam, "Down Slam [G]: ON ✔", "Down Slam [G]: OFF")
+
+local b10 = CBtn(c7, "Ragdoll Cancel [V]: OFF", UDim2.new(0,0,0,265), function(b) Toggles.Ragdoll = not Toggles.Ragdoll; _G.saveSettings(); upBtn(b, Toggles.Ragdoll, "Ragdoll Cancel [V]: ON ✔", "Ragdoll Cancel [V]: OFF") end)
+upBtn(b10, Toggles.Ragdoll, "Ragdoll Cancel [V]: ON ✔", "Ragdoll Cancel [V]: OFF")
 
 local function getCls()
     local c, d = nil, math.huge
@@ -147,20 +270,41 @@ local function getCls()
 end
 
 game:GetService("RunService").RenderStepped:Connect(function() if Toggles.CamLock then local t = getCls() if t then workspace.CurrentCamera.CFrame = CFrame.new(workspace.CurrentCamera.CFrame.Position, t.Position) end end end)
+local UIS = game:GetService("UserInputService")
+local Players = game:GetService("Players")
+local LP = Players.LocalPlayer
 
 UIS.InputBegan:Connect(function(i, g)
     if _G.IsBind then 
         if i.KeyCode ~= Enum.KeyCode.Unknown and i.KeyCode ~= Enum.KeyCode.K then 
-            _G.CamKey = i.KeyCode; _G.IsBind = false; 
-            BCLB.Text = "🎹 Бинд CamLock: [ " .. i.KeyCode.Name .. " ]" 
-            BCLB.BackgroundColor3 = Color3.fromRGB(22,18,30) 
+            _G.CamKey = i.KeyCode; _G.IsBind = false; _G.saveSettings()
+            local BCLB_Find = game:GetService("CoreGui"):FindFirstChild("TSB_Advanced_Booster") or LP:WaitForChild("PlayerGui"):FindFirstChild("TSB_Advanced_Booster")
+            local targetBtn = BCLB_Find and BCLB_Find:FindFirstChild("MainFrame") and BCLB_Find.MainFrame:FindFirstChild("ContentFrame") and BCLB_Find.MainFrame.ContentFrame:FindFirstChild("col7Page") and BCLB_Find.MainFrame.ContentFrame.col7Page:GetChildren()
+            -- Динамически обновляем текст кнопки бинда
+            if targetBtn then
+                for _, btn in pairs(targetBtn) do
+                    if btn:IsA("TextButton") and string.find(btn.Text, "Бинд CamLock") then
+                        btn.Text = "🎹 Бинд CamLock: [ " .. i.KeyCode.Name .. " ]"
+                        btn.BackgroundColor3 = Color3.fromRGB(22,18,30)
+                    end
+                end
+            end
         end
         return 
     end
     if g then return end
     
     if i.KeyCode == _G.CamKey then 
-        Toggles.CamLock = not Toggles.CamLock; upBtn(CLB, Toggles.CamLock, "🎯 Плавный CamLock: ON ✔", "🎯 Плавный CamLock: OFF")
+        local BCLB_Find = game:GetService("CoreGui"):FindFirstChild("TSB_Advanced_Booster") or LP:WaitForChild("PlayerGui"):FindFirstChild("TSB_Advanced_Booster")
+        local clbBtn = BCLB_Find and BCLB_Find:FindFirstChild("MainFrame") and BCLB_Find.MainFrame:FindFirstChild("ContentFrame") and BCLB_Find.MainFrame.ContentFrame:FindFirstChild("col7Page") and BCLB_Find.MainFrame.ContentFrame.col7Page:GetChildren()
+        Toggles.CamLock = not Toggles.CamLock; _G.saveSettings();
+        if clbBtn then
+            for _, btn in pairs(clbBtn) do
+                if btn:IsA("TextButton") and string.find(btn.Text, "CamLock:") then
+                    _G.upBtn(btn, Toggles.CamLock, "🎯 Плавный CamLock: ON ✔", "🎯 Плавный CamLock: OFF")
+                end
+            end
+        end
     elseif i.KeyCode == Enum.KeyCode.T and Toggles.SideDash then 
         _G.press(Enum.KeyCode.Q) _G.press(Enum.KeyCode.A)
     elseif i.KeyCode == Enum.KeyCode.G and Toggles.DownSlam then 
